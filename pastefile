@@ -1,0 +1,59 @@
+using System;
+using System.DirectoryServices.AccountManagement;
+
+namespace UserValidationApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.Write("Enter domain: ");
+            string domain = Console.ReadLine();
+            
+            Console.Write("Enter username: ");
+            string username = Console.ReadLine();
+            
+            Console.Write("Enter password: ");
+            string password = ReadPassword();
+
+            bool isValid = ValidateUser(domain, username, password);
+
+            if (isValid)
+            {
+                Console.WriteLine("User credentials are valid.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid user credentials.");
+            }
+        }
+
+        static bool ValidateUser(string domain, string username, string password)
+        {
+            using (var context = new PrincipalContext(ContextType.Domain, domain))
+            {
+                return context.ValidateCredentials(username, password);
+            }
+        }
+
+        // Function to hide password input in console
+        static string ReadPassword()
+        {
+            string password = string.Empty;
+            ConsoleKeyInfo keyInfo;
+
+            do
+            {
+                keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key != ConsoleKey.Enter)
+                {
+                    password += keyInfo.KeyChar;
+                    Console.Write("*");
+                }
+            } while (keyInfo.Key != ConsoleKey.Enter);
+            
+            Console.WriteLine();
+            return password;
+        }
+    }
+}
