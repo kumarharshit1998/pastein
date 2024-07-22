@@ -1,1 +1,70 @@
-4f3c0d55d7927bca5e67a2b5c8f9d1b24a3e8f937b6c0d2f5a8b7d6e4c9f3a1e
+using System;
+using System.Windows.Forms;
+using System.DirectoryServices.AccountManagement;
+
+namespace UserValidationApp
+{
+    public class MainForm : Form
+    {
+        private TextBox domainTextBox;
+        private TextBox usernameTextBox;
+        private TextBox passwordTextBox;
+        private Button validateButton;
+        private Label resultLabel;
+
+        public MainForm()
+        {
+            domainTextBox = new TextBox() { Top = 20, Left = 100, Width = 200, PlaceholderText = "Domain" };
+            usernameTextBox = new TextBox() { Top = 60, Left = 100, Width = 200, PlaceholderText = "Username" };
+            passwordTextBox = new TextBox() { Top = 100, Left = 100, Width = 200, UseSystemPasswordChar = true, PlaceholderText = "Password" };
+            validateButton = new Button() { Text = "Validate", Top = 140, Left = 100, Width = 200 };
+            resultLabel = new Label() { Top = 180, Left = 100, Width = 200 };
+
+            validateButton.Click += new EventHandler(ValidateButton_Click);
+
+            this.Controls.Add(domainTextBox);
+            this.Controls.Add(usernameTextBox);
+            this.Controls.Add(passwordTextBox);
+            this.Controls.Add(validateButton);
+            this.Controls.Add(resultLabel);
+
+            this.Text = "User Validation App";
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.ClientSize = new System.Drawing.Size(400, 250);
+        }
+
+        private void ValidateButton_Click(object sender, EventArgs e)
+        {
+            string domain = domainTextBox.Text;
+            string username = usernameTextBox.Text;
+            string password = passwordTextBox.Text;
+
+            bool isValid = ValidateUser(domain, username, password);
+
+            if (isValid)
+            {
+                resultLabel.Text = "User credentials are valid.";
+            }
+            else
+            {
+                resultLabel.Text = "Invalid user credentials.";
+            }
+        }
+
+        static bool ValidateUser(string domain, string username, string password)
+        {
+            using (var context = new PrincipalContext(ContextType.Domain, domain))
+            {
+                return context.ValidateCredentials(username, password);
+            }
+        }
+
+        [STAThread]
+        public static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+        }
+    }
+}
