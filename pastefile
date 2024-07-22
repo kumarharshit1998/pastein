@@ -1,59 +1,79 @@
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="YourNamespace.Login" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>Login Page</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h2>Login</h2>
+            <asp:Label ID="lblUsername" runat="server" Text="Username:"></asp:Label>
+            <asp:TextBox ID="txtUsername" runat="server"></asp:TextBox>
+            <br /><br />
+            <asp:Label ID="lblPassword" runat="server" Text="Password:"></asp:Label>
+            <asp:TextBox ID="txtPassword" runat="server" TextMode="Password"></asp:TextBox>
+            <br /><br />
+            <asp:Button ID="btnLogin" runat="server" Text="Login" OnClick="btnLogin_Click" />
+            <br /><br />
+            <asp:Label ID="lblMessage" runat="server" ForeColor="Red"></asp:Label>
+        </div>
+    </form>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using System;
 using System.DirectoryServices.AccountManagement;
 
-namespace UserValidationApp
+namespace YourNamespace
 {
-    class Program
+    public partial class Login : System.Web.UI.Page
     {
-        static void Main(string[] args)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            Console.Write("Enter domain: ");
-            string domain = Console.ReadLine();
-            
-            Console.Write("Enter username: ");
-            string username = Console.ReadLine();
-            
-            Console.Write("Enter password: ");
-            string password = ReadPassword();
 
-            bool isValid = ValidateUser(domain, username, password);
+        }
 
-            if (isValid)
+        protected void btnLogin_Click(object sender, EventArgs e)
+        {
+            string domain = "YourDomain"; // Replace with your domain name
+            string username = txtUsername.Text;
+            string password = txtPassword.Text;
+
+            if (ValidateUser(domain, username, password))
             {
-                Console.WriteLine("User credentials are valid.");
+                // Redirect to another page on successful login
+                Response.Redirect("HomePage.aspx"); // Replace with your target page
             }
             else
             {
-                Console.WriteLine("Invalid user credentials.");
+                // Show error message
+                lblMessage.Text = "Invalid username or password.";
             }
         }
 
-        static bool ValidateUser(string domain, string username, string password)
+        private bool ValidateUser(string domain, string username, string password)
         {
             using (var context = new PrincipalContext(ContextType.Domain, domain))
             {
                 return context.ValidateCredentials(username, password);
             }
         }
-
-        // Function to hide password input in console
-        static string ReadPassword()
-        {
-            string password = string.Empty;
-            ConsoleKeyInfo keyInfo;
-
-            do
-            {
-                keyInfo = Console.ReadKey(true);
-                if (keyInfo.Key != ConsoleKey.Enter)
-                {
-                    password += keyInfo.KeyChar;
-                    Console.Write("*");
-                }
-            } while (keyInfo.Key != ConsoleKey.Enter);
-            
-            Console.WriteLine();
-            return password;
-        }
     }
 }
+
+
