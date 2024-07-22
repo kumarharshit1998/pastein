@@ -1,1 +1,1 @@
-        private static readonly byte[] key = Encoding.UTF8.GetBytes("ThisIsASecretKeyForAES256Encryption!");
+        private static readonly byte[] key = Encoding.UTF8.GetBytes("ThisIsA32ByteLongKeyForAES256Encry!");
