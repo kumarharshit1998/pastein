@@ -1,70 +1,31 @@
 using System;
-using System.Windows.Forms;
+using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 
-namespace UserValidationApp
+class Program
 {
-    public class MainForm : Form
+    static void Main(string[] args)
     {
-        private TextBox domainTextBox;
-        private TextBox usernameTextBox;
-        private TextBox passwordTextBox;
-        private Button validateButton;
-        private Label resultLabel;
+        string domainName = "yourdomain"; // Replace with your domain
+        string groupName = "YourGroup";   // Replace with your AD group name
+        string userName = "YourUser";     // Replace with the user ID to validate
 
-        public MainForm()
+        bool isMember = IsUserInGroup(domainName, groupName, userName);
+        Console.WriteLine(isMember ? "User is a member of the group." : "User is not a member of the group.");
+    }
+
+    static bool IsUserInGroup(string domainName, string groupName, string userName)
+    {
+        using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, domainName))
         {
-            domainTextBox = new TextBox() { Top = 20, Left = 100, Width = 200, PlaceholderText = "Domain" };
-            usernameTextBox = new TextBox() { Top = 60, Left = 100, Width = 200, PlaceholderText = "Username" };
-            passwordTextBox = new TextBox() { Top = 100, Left = 100, Width = 200, UseSystemPasswordChar = true, PlaceholderText = "Password" };
-            validateButton = new Button() { Text = "Validate", Top = 140, Left = 100, Width = 200 };
-            resultLabel = new Label() { Top = 180, Left = 100, Width = 200 };
+            GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, groupName);
+            UserPrincipal user = UserPrincipal.FindByIdentity(ctx, userName);
 
-            validateButton.Click += new EventHandler(ValidateButton_Click);
-
-            this.Controls.Add(domainTextBox);
-            this.Controls.Add(usernameTextBox);
-            this.Controls.Add(passwordTextBox);
-            this.Controls.Add(validateButton);
-            this.Controls.Add(resultLabel);
-
-            this.Text = "User Validation App";
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.ClientSize = new System.Drawing.Size(400, 250);
-        }
-
-        private void ValidateButton_Click(object sender, EventArgs e)
-        {
-            string domain = domainTextBox.Text;
-            string username = usernameTextBox.Text;
-            string password = passwordTextBox.Text;
-
-            bool isValid = ValidateUser(domain, username, password);
-
-            if (isValid)
+            if (group != null && user != null)
             {
-                resultLabel.Text = "User credentials are valid.";
+                return group.GetMembers(true).Contains(user);
             }
-            else
-            {
-                resultLabel.Text = "Invalid user credentials.";
-            }
-        }
-
-        static bool ValidateUser(string domain, string username, string password)
-        {
-            using (var context = new PrincipalContext(ContextType.Domain, domain))
-            {
-                return context.ValidateCredentials(username, password);
-            }
-        }
-
-        [STAThread]
-        public static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            return false;
         }
     }
 }
