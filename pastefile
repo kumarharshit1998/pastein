@@ -1,43 +1,39 @@
-using System;
-using System.DirectoryServices.AccountManagement;
-
-protected void btnLogin_Click(object sender, EventArgs e)
-{
-    string domain = "bbtnet.com"; // Replace with your domain name
-    string username = txtUsername.Text;
-    string password = txtPassword.Text;
-    string adGroup = "YourADGroupName"; // Replace with the desired AD group name
-
-    if (ValidateUser(domain, username, password) && IsUserInGroup(domain, username, adGroup))
-    {
-        // Redirect to another page on successful login
-        Response.Redirect("Admin.aspx"); // Replace with your target page
-    }
-    else
-    {
-        // Show error message
-        lblMessage.Text = "Invalid username, password, or user is not in the required AD group.";
-    }
-}
-
-static bool ValidateUser(string domain, string username, string password)
-{
-    using (var context = new PrincipalContext(ContextType.Domain, domain))
-    {
-        return context.ValidateCredentials(username, password, ContextOptions.Negotiate);
-    }
-}
-
-static bool IsUserInGroup(string domain, string username, string groupName)
-{
-    using (var context = new PrincipalContext(ContextType.Domain, domain))
-    using (var user = UserPrincipal.FindByIdentity(context, username))
-    using (var group = GroupPrincipal.FindByIdentity(context, groupName))
-    {
-        if (user != null && group != null)
-        {
-            return user.IsMemberOf(group);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-        return false;
-    }
-}
+        .navbar {
+            background-color: #2c6ea6;
+            overflow: hidden;
+        }
+        .navbar a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        .navbar a:hover {
+            background-color: #4b9edb;
+        }
+        .header {
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#">Time Tracking System</a>
+    </div>
+</body>
+</html>
