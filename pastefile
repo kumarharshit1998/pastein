@@ -1,31 +1,43 @@
 using System;
-using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 
-class Program
+protected void btnLogin_Click(object sender, EventArgs e)
 {
-    static void Main(string[] args)
-    {
-        string domainName = "yourdomain"; // Replace with your domain
-        string groupName = "YourGroup";   // Replace with your AD group name
-        string userName = "YourUser";     // Replace with the user ID to validate
+    string domain = "bbtnet.com"; // Replace with your domain name
+    string username = txtUsername.Text;
+    string password = txtPassword.Text;
+    string adGroup = "YourADGroupName"; // Replace with the desired AD group name
 
-        bool isMember = IsUserInGroup(domainName, groupName, userName);
-        Console.WriteLine(isMember ? "User is a member of the group." : "User is not a member of the group.");
+    if (ValidateUser(domain, username, password) && IsUserInGroup(domain, username, adGroup))
+    {
+        // Redirect to another page on successful login
+        Response.Redirect("Admin.aspx"); // Replace with your target page
     }
-
-    static bool IsUserInGroup(string domainName, string groupName, string userName)
+    else
     {
-        using (PrincipalContext ctx = new PrincipalContext(ContextType.Domain, domainName))
-        {
-            GroupPrincipal group = GroupPrincipal.FindByIdentity(ctx, groupName);
-            UserPrincipal user = UserPrincipal.FindByIdentity(ctx, userName);
+        // Show error message
+        lblMessage.Text = "Invalid username, password, or user is not in the required AD group.";
+    }
+}
 
-            if (group != null && user != null)
-            {
-                return group.GetMembers(true).Contains(user);
-            }
-            return false;
+static bool ValidateUser(string domain, string username, string password)
+{
+    using (var context = new PrincipalContext(ContextType.Domain, domain))
+    {
+        return context.ValidateCredentials(username, password, ContextOptions.Negotiate);
+    }
+}
+
+static bool IsUserInGroup(string domain, string username, string groupName)
+{
+    using (var context = new PrincipalContext(ContextType.Domain, domain))
+    using (var user = UserPrincipal.FindByIdentity(context, username))
+    using (var group = GroupPrincipal.FindByIdentity(context, groupName))
+    {
+        if (user != null && group != null)
+        {
+            return user.IsMemberOf(group);
         }
+        return false;
     }
 }
