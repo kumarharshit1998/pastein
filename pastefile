@@ -1,39 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Tracking System</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .navbar {
-            background-color: #2c6ea6;
-            overflow: hidden;
-        }
-        .navbar a {
-            float: left;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 20px;
-            text-decoration: none;
-        }
-        .navbar a:hover {
-            background-color: #4b9edb;
-        }
-        .header {
-            text-align: center;
-            margin: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="navbar">
-        <a href="#">Time Tracking System</a>
-    </div>
-</body>
-</html>
+using System;
+using System.Text.RegularExpressions;
+
+// Function to sanitize user input
+public static string SanitizeInput(string input)
+{
+    return Regex.Replace(input, @"[^\w\s@.-]", "_");
+}
+
+// Example usage
+string sanitizedEmail = SanitizeInput(UserData.CognitoUserEmail);
+_Logger.LogWarning($"Error Status returned from RMS Service while performing TIN Search. Search performed by: {sanitizedEmail}");
