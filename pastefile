@@ -1,12 +1,14 @@
-using System;
-using System.Text.RegularExpressions;
 
-// Function to sanitize user input
-public static string SanitizeInput(string input)
+private async Task<byte[]> ObjectToByteArrayAsync(object obj)
 {
-    return Regex.Replace(input, @"[^\w\s@.-]", "_");
+    using (var memoryStream = new MemoryStream())
+    {
+        using (var writer = new StreamWriter(memoryStream))
+        {
+            var jsonText = JsonConvert.SerializeObject(obj);
+            await writer.WriteAsync(jsonText);
+            await writer.FlushAsync();
+        }
+        return memoryStream.ToArray();
+    }
 }
-
-// Example usage
-string sanitizedEmail = SanitizeInput(UserData.CognitoUserEmail);
-_Logger.LogWarning($"Error Status returned from RMS Service while performing TIN Search. Search performed by: {sanitizedEmail}");
