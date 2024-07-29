@@ -1,14 +1,11 @@
-
-private async Task<byte[]> ObjectToByteArrayAsync(object obj)
+private async Task<byte[]> ObjectToByteArray(object obj)
 {
-    using (var memoryStream = new MemoryStream())
+    using var memoryStream = new MemoryStream();
+    var jsonText = JsonConvert.SerializeObject(obj);
+    using (var writer = new StreamWriter(memoryStream))
     {
-        using (var writer = new StreamWriter(memoryStream))
-        {
-            var jsonText = JsonConvert.SerializeObject(obj);
-            await writer.WriteAsync(jsonText);
-            await writer.FlushAsync();
-        }
-        return memoryStream.ToArray();
+        await writer.WriteAsync(jsonText);
+        await writer.FlushAsync();
     }
+    return memoryStream.ToArray();
 }
