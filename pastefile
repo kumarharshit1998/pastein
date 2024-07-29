@@ -2,10 +2,16 @@ private async Task<byte[]> ObjectToByteArray(object obj)
 {
     using var memoryStream = new MemoryStream();
     var jsonText = JsonConvert.SerializeObject(obj);
-    using (var writer = new StreamWriter(memoryStream))
+
+    // Using StreamWriter in a separate block
+    using (var writer = new StreamWriter(memoryStream, leaveOpen: true))
     {
         await writer.WriteAsync(jsonText);
         await writer.FlushAsync();
     }
+    
+    // Reset the memory stream position to the beginning
+    memoryStream.Position = 0;
+
     return memoryStream.ToArray();
 }
