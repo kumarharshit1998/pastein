@@ -1,49 +1,14 @@
-<%
-' Define your connection string
-Dim conn, sqlInsert, gCompBRPRec
+Dim encodedStatcd, encodedA0, encodedQpr, encodedQqa, encodedQcl, encodedCms
+encodedStatcd = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("statcd"), True)
+encodedA0 = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("a0"), True)
+encodedQpr = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("qpr"), True)
+encodedQqa = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("qqa"), True)
+encodedQcl = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("qcl"), True)
+encodedCms = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("cms"), True)
 
-' Capture the form value
-gCompBRPRec = Request.Form("gCompBRPRec")
-
-' Check if the form value is not empty
-If Not IsEmpty(gCompBRPRec) Then
-    ' Create a connection object
-    Set conn = Server.CreateObject("ADODB.Connection")
-    
-    ' Open the connection to the database
-    conn.Open "Provider=SQLOLEDB;Data Source=dev-dersql;Initial Catalog=YourDatabaseName;User ID=YourUsername;Password=YourPassword;"
-    
-    ' Define the SQL Insert command
-    sqlInsert = "INSERT INTO YourTableName (DateColumn) VALUES ('" & gCompBRPRec & "')"
-    
-    ' Execute the SQL command
-    conn.Execute(sqlInsert)
-    
-    ' Close the connection
-    conn.Close
-    Set conn = Nothing
-End If
-%>
-
-<form method="post">
-    <table>
-        <tr>
-            <td colspan="12" class="clsFormHeader">&nbsp; &nbsp; Statuses</td>
-        </tr>
-        <tr>
-            <td align="right" class="clsFieldNames" nowrap>Approval Letter Sent:</td>
-            <td>
-                <!-- Input field for the date -->
-                <input type="text" name="gCompBRPRec" value="<%=gCompBRPRec%>">
-            </td>
-        </tr>
-        <tr>
-            <td align="right" class="clsFieldNames" nowrap>No Interest or No Reply:</td>
-            <td>
-                <!-- Your existing function to draw the UI component -->
-                <% DrawVesorNo("nointnorep", gNoIntNoRep, gNoIntNoRepDate, gNoIntNoRepUser) %>
-            </td>
-        </tr>
-    </table>
-    <input type="submit" value="Submit">
-</form>
+oCmd.Parameters.Append oCmd.CreateParameter("@STAT_CODE", VarChar, 1, 50, encodedStatcd)
+oCmd.Parameters.Append oCmd.CreateParameter("@A0", Khar, 2, 2, encodedA0)
+oCmd.Parameters.Append oCmd.CreateParameter("@QPR", Khar, 1, 1, encodedQpr)
+oCmd.Parameters.Append oCmd.CreateParameter("@QQA", Khar, 1, 1, encodedQqa)
+oCmd.Parameters.Append oCmd.CreateParameter("@QCL", Khar, 1, 1, encodedQcl)
+oCmd.Parameters.Append oCmd.CreateParameter("@CMS_CONT", Khar, 1, 1, encodedCms)
