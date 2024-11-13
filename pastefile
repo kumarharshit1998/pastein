@@ -1,4 +1,4 @@
-' Test script to connect to BlueZone session and retrieve screen text
+' Test script to connect to BlueZone session, retrieve cursor position, and read screen text
 
 On Error Resume Next
 
@@ -16,16 +16,23 @@ bzSession.Connect "A"
 
 ' Check if connection was successful
 If bzSession.connected Then
-    ' Retrieve text from a specific location on the screen
-    row = 1
-    col = 1
-    length = 10  ' Number of characters to read
+    ' Get current cursor position
+    Dim cursorRow, cursorCol
+    bzSession.GetCursorPos cursorRow, cursorCol
+    WScript.Echo "Cursor is at row " & cursorRow & ", column " & cursorCol
+
+    ' Set row, column, and length for text retrieval
+    row = cursorRow   ' Start at cursor row
+    col = cursorCol   ' Start at cursor column
+    length = 20       ' Number of characters to read; adjust as needed
+
+    ' Retrieve text from the cursor position
     screenText = bzSession.CopyText(row, col, length)
-    
+
     ' Display the retrieved text
-    WScript.Echo "Text at row " & row & ", col " & col & ": " & screenText
+    WScript.Echo "Text at cursor position (" & row & ", " & col & "): " & screenText
 Else
-    WScript.Echo "Connected to BlueZone session failed."
+    WScript.Echo "Failed to connect to BlueZone session."
 End If
 
 ' Disconnect the session
