@@ -1,4 +1,4 @@
-' Enhanced test script to connect to BlueZone session, retrieve cursor position, and read screen text
+' Test script to check BlueZone session properties and retrieve text
 
 On Error Resume Next
 
@@ -16,6 +16,11 @@ bzSession.Connect "A"
 
 ' Check if connection was successful
 If bzSession.connected Then
+    ' Display some session properties to confirm connection
+    WScript.Echo "Connected to BlueZone session."
+    WScript.Echo "Screen width: " & bzSession.ScreenWidth
+    WScript.Echo "Screen height: " & bzSession.ScreenHeight
+
     ' Attempt to get cursor position
     Dim cursorRow, cursorCol
     bzSession.GetCursorPos cursorRow, cursorCol
@@ -23,19 +28,17 @@ If bzSession.connected Then
     ' Check if cursor position was retrieved
     If IsNumeric(cursorRow) And IsNumeric(cursorCol) Then
         WScript.Echo "Cursor is at row " & cursorRow & ", column " & cursorCol
-
-        ' Set row, column, and length for text retrieval
-        row = cursorRow   ' Start at cursor row
-        col = cursorCol   ' Start at cursor column
-        length = 20       ' Number of characters to read; adjust as needed
-
-        ' Retrieve text from the cursor position
-        screenText = bzSession.CopyText(row, col, length)
-
-        ' Display the retrieved text
-        WScript.Echo "Text at cursor position (" & row & ", " & col & "): " & screenText
     Else
-        WScript.Echo "Failed to retrieve cursor position. Please check the BlueZone session state."
+        WScript.Echo "Failed to retrieve cursor position. Trying with fixed values."
+        
+        ' If GetCursorPos fails, try reading text from a known location
+        row = 5  ' Test row, adjust as needed
+        col = 10 ' Test column, adjust as needed
+        length = 20  ' Number of characters to read
+        screenText = bzSession.CopyText(row, col, length)
+        
+        ' Display the retrieved text
+        WScript.Echo "Text at (" & row & ", " & col & "): " & screenText
     End If
 Else
     WScript.Echo "Failed to connect to BlueZone session."
