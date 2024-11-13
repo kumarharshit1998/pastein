@@ -1,12 +1,13 @@
 LoginModel.cs
+
 // Models/LoginModel.cs
 using System.ComponentModel.DataAnnotations;
 
-namespace YourNamespace.Models
+namespace LMGcore.Models
 {
     public class LoginModel
     {
-        [Required]
+        [Required(ErrorMessage = "User ID is required.")]
         [Display(Name = "User ID")]
         public string UserId { get; set; }
         
@@ -15,18 +16,15 @@ namespace YourNamespace.Models
 }
 
 
-
-
 LoginController.cs
 
 // Controllers/LoginController.cs
 using Microsoft.AspNetCore.Mvc;
-using YourNamespace.Models;
 using Microsoft.Extensions.Configuration;
-using System.DirectoryServices;
 using System.Data.SqlClient;
+using LMGcore.Models;
 
-namespace YourNamespace.Controllers
+namespace LMGcore.Controllers
 {
     public class LoginController : Controller
     {
@@ -37,46 +35,48 @@ namespace YourNamespace.Controllers
             _configuration = configuration;
         }
 
+        // Display the login form
         [HttpGet]
         public IActionResult Index()
         {
-            return View(new LoginModel());
+            return View(); // Looks for Views/Login/Index.cshtml or Views/Login/Login.cshtml
         }
 
+        // Handle the login form submission
         [HttpPost]
         public IActionResult Index(LoginModel model)
         {
             if (ModelState.IsValid)
             {
                 string userId = model.UserId;
-                
-                // Placeholder for checking Active Directory and SQL permissions
+
+                // Check Active Directory and Database Access
                 if (CheckActiveDirectoryAccess(userId) && CheckDatabaseAccess(userId))
                 {
-                    // Create a session or authentication token here
+                    // Login success, redirect to a home page or dashboard
                     TempData["Message"] = $"User ID {userId} has successfully logged in.";
-                    return RedirectToAction("Home", "Dashboard");
+                    return RedirectToAction("Home", "Dashboard"); // Assumes a Dashboard controller exists
                 }
                 else
                 {
                     model.Message = "Access denied. Please contact support.";
                 }
             }
-            return View(model);
+            return View("Login", model);  // Updated to point to Login.cshtml
         }
 
+        // Simulates checking user access in Active Directory
         private bool CheckActiveDirectoryAccess(string userId)
         {
-            // Simulate AD check logic or implement real AD access check here
-            return true;
+            // Replace with actual AD check logic
+            return true;  // Placeholder: always returns true
         }
 
+        // Checks if the user has access based on a database record
         private bool CheckDatabaseAccess(string userId)
         {
-            // Simulate database access check
-            // Here, you can query your database or use a stored procedure similar to "usp_LMG_GetUserAccessRecord"
-
             string connectionString = _configuration.GetConnectionString("LMConnStr");
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -88,7 +88,7 @@ namespace YourNamespace.Controllers
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    return reader.HasRows;
+                    return reader.HasRows; // True if user has access record
                 }
             }
         }
@@ -96,12 +96,10 @@ namespace YourNamespace.Controllers
 }
 
 
+Login.cshtml
 
-
-Index.cshtml
-
-<!-- Views/Login/Index.cshtml -->
-@model YourNamespace.Models.LoginModel
+<!-- Views/Login/Login.cshtml -->
+@model LMGcore.Models.LoginModel
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -132,3 +130,9 @@ Index.cshtml
     </form>
 </body>
 </html>
+
+
+Program.cs
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Login}/{action=Index}/{id?}");
