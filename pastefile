@@ -1,6 +1,32 @@
-Set oBZ = CreateObject("BZWhll.WhllObj")
-If IsObject(oBZ) Then
-    MsgBox "BlueZone ActiveX object created successfully."
-Else
-    MsgBox "Failed to create BlueZone ActiveX object."
+' Test script to connect to BlueZone session and retrieve screen text
+
+On Error Resume Next
+
+' Create BlueZone session object
+Set bzSession = CreateObject("BZWhll.WhllObj")
+
+' Check if the object was created successfully
+If Err.Number <> 0 Then
+    WScript.Echo "Failed to create BlueZone object. Scripting may not be enabled."
+    WScript.Quit
 End If
+
+' Connect to BlueZone session (using session A; adjust if needed)
+bzSession.Connect "A"
+
+' Check if connection was successful
+If bzSession.connected Then
+    ' Retrieve text from a specific location on the screen
+    row = 1
+    col = 1
+    length = 10  ' Number of characters to read
+    screenText = bzSession.CopyText(row, col, length)
+    
+    ' Display the retrieved text
+    WScript.Echo "Text at row " & row & ", col " & col & ": " & screenText
+Else
+    WScript.Echo "Connected to BlueZone session failed."
+End If
+
+' Disconnect the session
+bzSession.Disconnect
