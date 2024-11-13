@@ -1,138 +1,25 @@
-LoginModel.cs
-
-// Models/LoginModel.cs
-using System.ComponentModel.DataAnnotations;
-
-namespace LMGcore.Models
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Index(LoginModel model)
 {
-    public class LoginModel
+    if (!ModelState.IsValid)
     {
-        [Required(ErrorMessage = "User ID is required.")]
-        [Display(Name = "User ID")]
-        public string UserId { get; set; }
-        
-        public string Message { get; set; }
+        // If the model validation fails, return the same view with validation errors
+        return View("Login", model);
     }
-}
 
+    string userId = model.UserId;
 
-LoginController.cs
-
-// Controllers/LoginController.cs
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
-using LMGcore.Models;
-
-namespace LMGcore.Controllers
-{
-    public class LoginController : Controller
+    // Proceed with user authentication and authorization checks
+    if (CheckActiveDirectoryAccess(userId) && CheckDatabaseAccess(userId))
     {
-        private readonly IConfiguration _configuration;
-
-        public LoginController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        // Display the login form
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View(); // Looks for Views/Login/Index.cshtml or Views/Login/Login.cshtml
-        }
-
-        // Handle the login form submission
-        [HttpPost]
-        public IActionResult Index(LoginModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                string userId = model.UserId;
-
-                // Check Active Directory and Database Access
-                if (CheckActiveDirectoryAccess(userId) && CheckDatabaseAccess(userId))
-                {
-                    // Login success, redirect to a home page or dashboard
-                    TempData["Message"] = $"User ID {userId} has successfully logged in.";
-                    return RedirectToAction("Home", "Dashboard"); // Assumes a Dashboard controller exists
-                }
-                else
-                {
-                    model.Message = "Access denied. Please contact support.";
-                }
-            }
-            return View("Login", model);  // Updated to point to Login.cshtml
-        }
-
-        // Simulates checking user access in Active Directory
-        private bool CheckActiveDirectoryAccess(string userId)
-        {
-            // Replace with actual AD check logic
-            return true;  // Placeholder: always returns true
-        }
-
-        // Checks if the user has access based on a database record
-        private bool CheckDatabaseAccess(string userId)
-        {
-            string connectionString = _configuration.GetConnectionString("LMConnStr");
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand("usp_LMG_GetUserAccessRecord", conn)
-                {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                };
-                cmd.Parameters.AddWithValue("@QUID", userId);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    return reader.HasRows; // True if user has access record
-                }
-            }
-        }
+        TempData["Message"] = $"User ID {userId} has successfully logged in.";
+        return RedirectToAction("Home", "Dashboard");  // Redirects to a secure area after login
     }
+    else
+    {
+        model.Message = "Access denied. Please contact support.";
+    }
+
+    return View("Login", model);
 }
-
-
-Login.cshtml
-
-<!-- Views/Login/Login.cshtml -->
-@model LMGcore.Models.LoginModel
-
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Loss Mitigation Login</title>
-    <link href="~/css/Truiststyles.css" rel="stylesheet" />
-</head>
-<body>
-    <form method="post" asp-action="Index">
-        <div class="clsBorder">
-            <h2>Loss Mitigation Login</h2>
-            
-            <div>
-                <label asp-for="UserId">Enter User ID:</label>
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            
-            <div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-            
-            @if (Model.Message != null)
-            {
-                <div class="alert alert-warning">@Model.Message</div>
-            }
-        </div>
-    </form>
-</body>
-</html>
-
-
-Program.cs
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Login}/{action=Index}/{id?}");
