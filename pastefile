@@ -1,4 +1,4 @@
-' Test script to connect to BlueZone session, retrieve cursor position, and read screen text
+' Enhanced test script to connect to BlueZone session, retrieve cursor position, and read screen text
 
 On Error Resume Next
 
@@ -16,21 +16,27 @@ bzSession.Connect "A"
 
 ' Check if connection was successful
 If bzSession.connected Then
-    ' Get current cursor position
+    ' Attempt to get cursor position
     Dim cursorRow, cursorCol
     bzSession.GetCursorPos cursorRow, cursorCol
-    WScript.Echo "Cursor is at row " & cursorRow & ", column " & cursorCol
 
-    ' Set row, column, and length for text retrieval
-    row = cursorRow   ' Start at cursor row
-    col = cursorCol   ' Start at cursor column
-    length = 20       ' Number of characters to read; adjust as needed
+    ' Check if cursor position was retrieved
+    If IsNumeric(cursorRow) And IsNumeric(cursorCol) Then
+        WScript.Echo "Cursor is at row " & cursorRow & ", column " & cursorCol
 
-    ' Retrieve text from the cursor position
-    screenText = bzSession.CopyText(row, col, length)
+        ' Set row, column, and length for text retrieval
+        row = cursorRow   ' Start at cursor row
+        col = cursorCol   ' Start at cursor column
+        length = 20       ' Number of characters to read; adjust as needed
 
-    ' Display the retrieved text
-    WScript.Echo "Text at cursor position (" & row & ", " & col & "): " & screenText
+        ' Retrieve text from the cursor position
+        screenText = bzSession.CopyText(row, col, length)
+
+        ' Display the retrieved text
+        WScript.Echo "Text at cursor position (" & row & ", " & col & "): " & screenText
+    Else
+        WScript.Echo "Failed to retrieve cursor position. Please check the BlueZone session state."
+    End If
 Else
     WScript.Echo "Failed to connect to BlueZone session."
 End If
