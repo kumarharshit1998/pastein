@@ -1,25 +1,8 @@
-[HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult Index(LoginModel model)
 {
-    if (!ModelState.IsValid)
-    {
-        // If the model validation fails, return the same view with validation errors
-        return View("Login", model);
-    }
-
-    string userId = model.UserId;
-
-    // Proceed with user authentication and authorization checks
-    if (CheckActiveDirectoryAccess(userId) && CheckDatabaseAccess(userId))
-    {
-        TempData["Message"] = $"User ID {userId} has successfully logged in.";
-        return RedirectToAction("Home", "Dashboard");  // Redirects to a secure area after login
-    }
-    else
-    {
-        model.Message = "Access denied. Please contact support.";
-    }
-
-    return View("Login", model);
+  "ConnectionStrings": {
+    "LNConnStr": "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=D_LOSSMIT;Data Source=DEV-DERSQLO1,5533;"
+  }
 }
+
+
+
