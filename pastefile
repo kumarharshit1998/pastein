@@ -1,8 +1,9 @@
-{
-  "ConnectionStrings": {
-    "LNConnStr": "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=D_LOSSMIT;Data Source=DEV-DERSQLO1,5533;"
-  }
-}
-
-
-
+<script type="text/javascript">
+    try {
+        var bzObject = new ActiveXObject("BZWhll.WhllObj");
+        alert("Successfully created ActiveXObject!");
+        // You can add further actions with bzObject here.
+    } catch (e) {
+        alert("Failed to create ActiveXObject: " + e.message);
+    }
+</script>
