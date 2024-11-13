@@ -1,4 +1,4 @@
-' Test script to check BlueZone session properties and retrieve text
+' Enhanced test script to connect to BlueZone session and retrieve text from fixed coordinates
 
 On Error Resume Next
 
@@ -21,6 +21,9 @@ If bzSession.connected Then
     WScript.Echo "Screen width: " & bzSession.ScreenWidth
     WScript.Echo "Screen height: " & bzSession.ScreenHeight
 
+    ' Optional: Add a small delay to ensure screen is fully loaded
+    WScript.Sleep 1000  ' 1-second delay
+
     ' Attempt to get cursor position
     Dim cursorRow, cursorCol
     bzSession.GetCursorPos cursorRow, cursorCol
@@ -31,10 +34,10 @@ If bzSession.connected Then
     Else
         WScript.Echo "Failed to retrieve cursor position. Trying with fixed values."
         
-        ' If GetCursorPos fails, try reading text from a known location
-        row = 5  ' Test row, adjust as needed
-        col = 10 ' Test column, adjust as needed
-        length = 20  ' Number of characters to read
+        ' Try reading text from a fixed position (adjust as necessary)
+        row = 5    ' Test row with known data
+        col = 10   ' Test column with known data
+        length = 20  ' Adjust the length as needed
         screenText = bzSession.CopyText(row, col, length)
         
         ' Display the retrieved text
