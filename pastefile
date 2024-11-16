@@ -1,9 +1,125 @@
-<script type="text/javascript">
-    try {
-        var bzObject = new ActiveXObject("BZWhll.WhllObj");
-        alert("Successfully created ActiveXObject!");
-        // You can add further actions with bzObject here.
-    } catch (e) {
-        alert("Failed to create ActiveXObject: " + e.message);
-    }
-</script>
+<body>
+    <!-- Main Header with Curved Sides and Text -->
+    <header style="position: relative; height: calc(2.5 * 56px); display: flex; align-items: center; background-color: #fff; overflow: hidden;">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3"
+             style="width: 100%; display: flex; align-items: center; background-color: #fff;">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">lmgtstapp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Left Curve with Text -->
+        <div style="position: absolute; left: 0; top: 0; height: 100%; width: 30%; background-color: #2E1A47; clip-path: ellipse(80% 100% at 20% 50%); color: #fff; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 1.2em;">harshittest</span>
+        </div>
+        
+        <div style="position: absolute; top: 50%; left: 30%; transform: translateY(-50%); text-align: center; font-size: 1.8em; font-weight: bold; color: #2E1A47; white-space: nowrap;">
+
+            <h3>@ViewData["Title"]</h3>  <!-- This will dynamically display the submenu name -->
+        </div>
+
+        <!-- Right Curve -->
+        <div style="position: absolute; right: 0; top: 0; height: 100%; width: 15%; background-color: #2E1A47; clip-path: ellipse(80% 100% at 80% 50%);"></div>
+    </header>
+
+    <!-- Subheader with Dropdown Menus and Logout Button -->
+    <div class="subheader bg-light border-bottom" style="height: calc(0.5 * 56px); display: flex; align-items: center; padding: 0;">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between align-items-center">
+                    <!-- Left Side: Menus -->
+                    <ul class="navbar-nav">
+                        <!-- Menu Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="menuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Menu
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="menuDropdown">
+                                <li><a class="dropdown-item" href="@Url.Action("Submenu1", "Menu")">Menu Submenu 1</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Submenu2", "Menu")">Menu Submenu 2</a></li>
+                                <li><a class="dropdown-item" href="#">Menu Submenu 3</a></li>
+                                <li><a class="dropdown-item" href="#">Menu Submenu 4</a></li>
+                                <li><a class="dropdown-item" href="#">Menu Submenu 5</a></li>
+                                <li><a class="dropdown-item" href="#">Menu Submenu 6</a></li>
+                                <li><a class="dropdown-item" href="#">Menu Submenu 7</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Autofill Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="autofillDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Autofill
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="autofillDropdown">
+                                <li><a class="dropdown-item" href="#">Autofill Submenu 1</a></li>
+                                <li><a class="dropdown-item" href="#">Autofill Submenu 2</a></li>
+                                <li><a class="dropdown-item" href="#">Autofill Submenu 3</a></li>
+                                <li><a class="dropdown-item" href="#">Autofill Submenu 4</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Admin Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Admin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <li><a class="dropdown-item" href="#">Admin Submenu 1</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 2</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 3</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 4</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 5</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 6</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 7</a></li>
+                                <li><a class="dropdown-item" href="#">Admin Submenu 8</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- AddCodes Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="addCodesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                AddCodes
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="addCodesDropdown">
+                                <li><a class="dropdown-item" href="#">AddCodes Submenu 1</a></li>
+                                <li><a class="dropdown-item" href="#">AddCodes Submenu 2</a></li>
+                                <li><a class="dropdown-item" href="#">AddCodes Submenu 3</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- Right Side: Logout Button -->
+                    <div>
+                        <a href="#" class="btn btn-outline-danger" style="height: calc(0.5 * 56px); line-height: calc(0.5 * 56px); padding: 0 15px;">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - lmgtstapp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
