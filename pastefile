@@ -1,51 +1,13 @@
-    {
-        // Action for Submenu1
-        public IActionResult Submenu1()
-        {
-            ViewData["Title"] = "Submenu 1";  // Set submenu title dynamically
-            return View();  // This will look for a view called "Submenu1.cshtml"
-        }
-
-        // Action for Submenu2
-        public IActionResult Submenu2()
-        {
-            ViewData["Title"] = "Submenu 2";
-            return View();
-        }
-
-        // Action for Submenu3
-        public IActionResult Submenu3()
-        {
-            ViewData["Title"] = "Submenu 3";
-            return View();
-        }
-
-        // Action for Submenu4
-        public IActionResult Submenu4()
-        {
-            ViewData["Title"] = "Submenu 4";
-            return View();
-        }
-
-        // Action for Submenu5
-        public IActionResult Submenu5()
-        {
-            ViewData["Title"] = "Submenu 5";
-            return View();
-        }
-
-        // Action for Submenu6
-        public IActionResult Submenu6()
-        {
-            ViewData["Title"] = "Submenu 6";
-            return View();
-        }
-
-        // Action for Submenu7
-        public IActionResult Submenu7()
-        {
-            ViewData["Title"] = "Submenu 7";
-            return View();
-        }
-    }
+@{
+    ViewData["Title"] = "Submenu 1";  // Set the title of the page dynamically
 }
+
+@{
+    Layout = "_Layout";  // Use the common layout
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>  <!-- Display the submenu name dynamically -->
+    <!-- Page-specific content goes here -->
+    <p>Content for Menu Submenu 1...</p>
+</div>
