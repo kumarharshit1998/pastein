@@ -1,68 +1,7 @@
-Controller
-
-
-[HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Index(string userId)
-        {
-            // Check if the user is in the AD group
-            bool isValidUser = false;
-            string adGroup = "YourADGroupName"; // Replace with your AD group name
-
-            using (var context = new PrincipalContext(ContextType.Domain))
-            {
-                using (var group = GroupPrincipal.FindByIdentity(context, adGroup))
-                {
-                    if (group != null)
-                    {
-                        isValidUser = group.GetMembers(true).Any(member => member.SamAccountName == userId);
-                    }
-                }
-            }
-
-            if (isValidUser)
-            {
-                // Redirect to Submenu1 in Menu controller if user is valid
-                return RedirectToAction("Submenu1", "Menu");
-            }
-
-            // Show an error message if user validation fails
-            ViewBag.ErrorMessage = "Invalid user ID. Please try again.";
-            return View();
-        }
-    }
-}
-
-View
-
 @{
-    ViewData["Title"] = "Login";
+    ViewData["IsLoginPage"] = true;
 }
 
-<div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
-    <div style="text-align: center; width: 300px;">
-        <h2>Login</h2>
-        <form asp-action="Index" method="post">
-            <div class="mb-3">
-                <label for="userId" class="form-label">User ID</label>
-                <input type="text" class="form-control" id="userId" name="userId" required />
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-
-        @if (ViewBag.ErrorMessage != null)
-        {
-            <div class="alert alert-danger mt-3">
-                @ViewBag.ErrorMessage
-            </div>
-        }
-    </div>
-</div>
 
 
-
+@if (!(ViewData["IsLoginPage"] as bool? ?? false))
