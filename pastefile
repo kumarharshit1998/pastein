@@ -1,45 +1,9 @@
-using System.DirectoryServices.AccountManagement;
-using Microsoft.AspNetCore.Mvc;
-
-public class LoginController : Controller
-{
-    // Define the three AD groups to check
-    private readonly List<string> adGroups = new List<string> { "Group1", "Group2", "Group3" };
-
-    [HttpGet]
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult Index(string userId)
-    {
-        bool isAuthorized = false;
-
-        using (PrincipalContext context = new PrincipalContext(ContextType.Domain))
-        {
-            foreach (var group in adGroups)
-            {
-                // Check if the user belongs to any of the specified groups
-                if (UserPrincipal.FindByIdentity(context, userId) is UserPrincipal user && user.IsMemberOf(context, IdentityType.Name, group))
-                {
-                    isAuthorized = true;
-                    break; // Stop checking once we find the user in one group
-                }
-            }
-        }
-
-        if (isAuthorized)
-        {
-            // Redirect to Submenu 1 in Menu if the user is in any of the groups
-            return RedirectToAction("Submenu1", "Menu");
-        }
-        else
-        {
-            // Optionally, add a message for unauthorized users
-            ViewBag.ErrorMessage = "User ID is not authorized.";
-            return View();
-        }
-    }
-}
+SqlConnection sqlcon = new SqlConnection(constring);
+            String pname = "GetStudentDetail"; ;
+            sqlcon.Open();
+            SqlCommand com = new SqlCommand(pname, sqlcon);
+            com.CommandType = CommandType.StoredProcedure;
+            SqlDataReader dr = com.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Load(dr);
+            return View(dt);
