@@ -1,9 +1,126 @@
-function copyFormString() {
-    const tempTextarea = document.createElement("textarea");
-    tempTextarea.value = FormString; // Set your FormString value here
-    document.body.appendChild(tempTextarea);
-    tempTextarea.select();
-    document.execCommand("copy");
-    document.body.removeChild(tempTextarea);
-    alert("FormString copied to clipboard!");
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=YOUR_SERVER;Database=YOUR_DATABASE;User Id=YOUR_USER;Password=YOUR_PASSWORD;"
+  }
 }
+
+
+
+public class CallListItem
+{
+    public int LMID { get; set; }
+    public string UserRequested { get; set; }
+    public DateTime DateRequested { get; set; }
+    public string Status { get; set; }
+    public string CustomerName { get; set; }
+    public string TelephoneNumber { get; set; }
+}
+
+
+Controller
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+
+public class Submenu4Controller : Controller
+{
+    private readonly IConfiguration _configuration;
+
+    public Submenu4Controller(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    // Load Data from the Database
+    public async Task<IActionResult> Index()
+    {
+        var callListItems = new List<CallListItem>();
+        string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+        using (var connection = new SqlConnection(connectionString))
+        {
+            var command = new SqlCommand("usp_LMG_LoadSSCallList", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            await connection.OpenAsync();
+
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    var item = new CallListItem
+                    {
+                        LMID = reader.GetInt32(reader.GetOrdinal("LMDB_ID")),
+                        UserRequested = reader.GetString(reader.GetOrdinal("USER_ADDED")),
+                        DateRequested = reader.GetDateTime(reader.GetOrdinal("DATE_ADDED")),
+                        Status = reader.GetString(reader.GetOrdinal("STAT")),
+                        CustomerName = reader.GetString(reader.GetOrdinal("PRI_FNAME")) + " " + reader.GetString(reader.GetOrdinal("PRI_LNAME")),
+                        TelephoneNumber = reader.GetString(reader.GetOrdinal("PRI_AREA_CODE")) + reader.GetString(reader.GetOrdinal("PRI_PHONE"))
+                    };
+                    callListItems.Add(item);
+                }
+            }
+        }
+
+        return View(callListItems);
+    }
+
+    // Delete Item based on LMID
+    [HttpPost]
+    public async Task<IActionResult> Delete(int lmid)
+    {
+        string connectionString = _configuration.GetConnectionString("DefaultConnection");
+        using (var connection = new SqlConnection(connectionString))
+        {
+            var command = new SqlCommand("usp_LMG_UpdateSSCallList", connection);
+            command.CommandType = System.Data.CommandType.StoredProcedure;
+            command.Parameters.AddWithValue("@USRID", User.Identity.Name);
+            command.Parameters.AddWithValue("@CBID", lmid);
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
+        }
+
+        return RedirectToAction("Index");
+    }
+}
+
+
+View
+
+@model IEnumerable<CallListItem>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Delete?</th>
+            <th>LMID</th>
+            <th>User Requested</th>
+            <th>Date Requested</th>
+            <th>Status</th>
+            <th>Customer Name</th>
+            <th>Telephone Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <form asp-action="Delete" method="post" style="display:inline;">
+                        <input type="hidden" name="lmid" value="@item.LMID" />
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+                <td>@item.LMID</td>
+                <td>@item.UserRequested</td>
+                <td>@item.DateRequested.ToString("yyyy-MM-dd")</td>
+                <td>@item.Status</td>
+                <td>@item.CustomerName</td>
+                <td>@item.TelephoneNumber</td>
+            </tr>
+        }
+    </tbody>
+</table>
