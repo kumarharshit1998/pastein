@@ -1,1 +1,9 @@
-navigator.clipboard.writeText(FormString).then(() => alert("FormString copied to clipboard!"));
+function copyFormString() {
+    const tempTextarea = document.createElement("textarea");
+    tempTextarea.value = FormString; // Set your FormString value here
+    document.body.appendChild(tempTextarea);
+    tempTextarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempTextarea);
+    alert("FormString copied to clipboard!");
+}
