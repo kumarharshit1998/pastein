@@ -1,50 +1,7 @@
-using System;
-
-namespace BlueZoneScreenScraping
-{
-    class Program
-    {
-        static void Main()
-        {
-            try
-            {
-                // Create an instance of the BlueZone COM object
-                dynamic blueZone = Activator.CreateInstance(Type.GetTypeFromProgID("BZWhll.WhllObj"));
-                
-                // Connect to the session
-                int connectionResult = blueZone.Connect("A"); // Replace "A" with your session name
-                
-                // Check connection result (0 = success)
-                if (connectionResult != 0)
-                {
-                    Console.WriteLine($"Failed to connect to session. Error code: {connectionResult}");
-                    return;
-                }
-
-                // Debug: Check if connected
-                Console.WriteLine("Connected to session.");
-
-                // Read data from the screen
-                try
-                {
-                    string screenData = blueZone.ReadScreen(1, 1, 80); // Adjust dimensions if needed
-                    Console.WriteLine("Screen Data: " + screenData);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error while reading screen: " + ex.Message);
-                }
-
-                // Write data to the screen
-                blueZone.WriteScreen("Hello", 1, 1);
-
-                // Disconnect
-                blueZone.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("General Error: " + ex.Message);
-            }
-        }
-    }
+$blueZone = New-Object -ComObject BZWhll.WhllObj
+$result = $blueZone.Connect("A") # Replace "A" with your session name
+if ($result -eq 0) {
+    Write-Output "Connected successfully"
+} else {
+    Write-Output "Failed to connect. Error code: $result"
 }
