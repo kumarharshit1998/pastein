@@ -1,17 +1,33 @@
-@{
-    ViewData["Title"] = "Autofill Submenu Example";
-}
+using System;
 
-<h1>Autofill Submenu</h1>
+namespace BlueZoneScreenScraping
+{
+    class Program
+    {
+        static void Main()
+        {
+            try
+            {
+                // Create an instance of the BlueZone COM object
+                dynamic blueZone = Activator.CreateInstance(Type.GetTypeFromProgID("BZWhll.WhllObj"));
+                
+                // Connect to the session
+                blueZone.Connect("A"); // Replace "A" with your session name
+                
+                // Read data from the screen (e.g., first 80 characters on row 1)
+                string screenData = blueZone.ReadScreen(1, 1, 80);
+                Console.WriteLine("Screen Data: " + screenData);
 
-<!-- Button that triggers the script -->
-<button id="runScriptButton" class="btn btn-primary" onclick="runCustomScript()">Run Script</button>
-
-<!-- JavaScript function -->
-<script>
-    function runCustomScript() {
-        alert("Script is running!");
-        // Add your custom script logic here
-        console.log("This script ran successfully.");
+                // Example: Write data to a field on the screen
+                blueZone.WriteScreen("Hello", 1, 1);
+                
+                // Disconnect
+                blueZone.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+        }
     }
-</script>
+}
