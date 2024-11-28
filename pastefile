@@ -7,17 +7,24 @@ class Program
     {
         try
         {
-            // Create BlueZone session object
+            // Create an instance of BlueZone session
             dynamic bzSession = Activator.CreateInstance(Type.GetTypeFromProgID("BlueZone.Session"));
 
-            // Connect to BlueZone
-            bzSession.Connect();
+            // Make sure that the session object is created correctly
+            if (bzSession == null)
+            {
+                Console.WriteLine("Failed to create BlueZone session object.");
+                return;
+            }
 
-            // Example: Read a screen field at row 5, column 10, length 20
-            string screenData = bzSession.Screen.GetString(5, 10, 20);
-            Console.WriteLine($"Screen Data: {screenData}");
+            // Connect to the BlueZone session (replace with actual hostname and port)
+            bzSession.Connect("192.168.1.100", 23);
 
-            // Disconnect session
+            // Check if the Screen object is accessible
+            var screenData = bzSession.Screen.GetString(1, 1, 10);  // Get data from screen
+            Console.WriteLine("Screen Data: " + screenData);
+
+            // Disconnect when done
             bzSession.Disconnect();
         }
         catch (Exception ex)
