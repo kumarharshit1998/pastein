@@ -12,10 +12,12 @@ namespace BlueZoneScreenScraping
                 dynamic blueZone = Activator.CreateInstance(Type.GetTypeFromProgID("BZWhll.WhllObj"));
                 
                 // Connect to the session
-                bool isConnected = blueZone.Connect("A"); // Replace "A" with your session name
-                if (!isConnected)
+                int connectionResult = blueZone.Connect("A"); // Replace "A" with your session name
+                
+                // Check connection result (0 = success)
+                if (connectionResult != 0)
                 {
-                    Console.WriteLine("Failed to connect to session.");
+                    Console.WriteLine($"Failed to connect to session. Error code: {connectionResult}");
                     return;
                 }
 
