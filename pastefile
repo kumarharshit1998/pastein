@@ -1,7 +1,28 @@
-$blueZone = New-Object -ComObject BZWhll.WhllObj
-$result = $blueZone.Connect("A") # Replace "A" with your session name
-if ($result -eq 0) {
-    Write-Output "Connected successfully"
-} else {
-    Write-Output "Failed to connect. Error code: $result"
+using System;
+using System.Runtime.InteropServices;
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            // Create BlueZone session object
+            dynamic bzSession = Activator.CreateInstance(Type.GetTypeFromProgID("BlueZone.Session"));
+
+            // Connect to BlueZone
+            bzSession.Connect();
+
+            // Example: Read a screen field at row 5, column 10, length 20
+            string screenData = bzSession.Screen.GetString(5, 10, 20);
+            Console.WriteLine($"Screen Data: {screenData}");
+
+            // Disconnect session
+            bzSession.Disconnect();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
 }
