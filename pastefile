@@ -1,35 +1,49 @@
-using System;
-using System.Runtime.InteropServices;
+﻿@model IEnumerable<CustomerEntity>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mobile)
+            </th>
 
-class Program
-{
-    static void Main()
-    {
-        try
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
         {
-            // Create an instance of BlueZone session
-            dynamic bzSession = Activator.CreateInstance(Type.GetTypeFromProgID("BlueZone.Session"));
-
-            // Make sure that the session object is created correctly
-            if (bzSession == null)
-            {
-                Console.WriteLine("Failed to create BlueZone session object.");
-                return;
-            }
-
-            // Connect to the BlueZone session (replace with actual hostname and port)
-            bzSession.Connect("192.168.1.100", 23);
-
-            // Check if the Screen object is accessible
-            var screenData = bzSession.Screen.GetString(1, 1, 10);  // Get data from screen
-            Console.WriteLine("Screen Data: " + screenData);
-
-            // Disconnect when done
-            bzSession.Disconnect();
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mobile)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    <a asp-action="GetDetails" asp-route-id="@item.Id">Edit</a> |
+                    
+                </td>
+            </tr>
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error: {ex.Message}");
-        }
-    }
-}
+
+
+    </tbody>
+
+
+
+</table>
