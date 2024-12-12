@@ -1,18 +1,184 @@
-public async Task<IActionResult> ExecuteStoredProcedure(UserModel userModel)
+public class LMIDViewModel
 {
-    using (var connection = new SqlConnection("YourConnectionString"))
+    // First header columns
+    public string Column1 { get; set; }
+    public string Column2 { get; set; }
+    public string Column3 { get; set; }
+    public string Column4 { get; set; }
+    public string Column5 { get; set; }
+
+    // Second header columns
+    public string Column11 { get; set; }
+    public string Column12 { get; set; }
+    public string Column13 { get; set; }
+    public string Column14 { get; set; }
+}
+
+
+
+using Microsoft.AspNetCore.Mvc;
+using LMIDApplication.Models;
+
+public class HomeController : Controller
+{
+    public IActionResult Customer(string lmid)
     {
-        await connection.OpenAsync();
-
-        var command = new SqlCommand("YourStoredProcedureName", connection)
-        {
-            CommandType = CommandType.StoredProcedure
-        };
-        command.Parameters.AddWithValue("@USRID", userModel.USRID);
-        command.Parameters.AddWithValue("@CBID", userModel.CBID);
-
-        await command.ExecuteNonQueryAsync();
+        var viewModel = GetLMIDData(lmid);
+        return View(viewModel);
     }
 
-    return View();
+    public IActionResult Current(string lmid)
+    {
+        var viewModel = GetLMIDData(lmid);
+        return View(viewModel);
+    }
+
+    public IActionResult Collateral(string lmid)
+    {
+        var viewModel = GetLMIDData(lmid);
+        return View(viewModel);
+    }
+
+    public IActionResult Tracking(string lmid)
+    {
+        var viewModel = GetLMIDData(lmid);
+        return View(viewModel);
+    }
+
+    // Mock method to simulate data fetching
+    private LMIDViewModel GetLMIDData(string lmid)
+    {
+        return new LMIDViewModel
+        {
+            Column1 = "Data 1",
+            Column2 = "Data 2",
+            Column3 = "Data 3",
+            Column4 = "Data 4",
+            Column5 = "Data 5",
+            Column11 = "Data 11",
+            Column12 = "Data 12",
+            Column13 = "Data 13",
+            Column14 = "Data 14"
+        };
+    }
 }
+
+
+
+
+@model LMIDApplication.Models.LMIDViewModel
+
+@{
+    ViewData["Title"] = "Customer Page";
+}
+
+<h2>Customer Page</h2>
+<p>This is the Customer page content.</p>
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <style>
+        .info-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            background-color: #f9f9f9;
+        }
+        .info-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .info-box th, .info-box td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .navigation a {
+            padding: 10px 20px;
+            background-color: #2e1a47;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .navigation a:hover {
+            background-color: #4b356a;
+        }
+        .content {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                    <th>Column 3</th>
+                    <th>Column 4</th>
+                    <th>Column 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.Column1</td>
+                    <td>@Model.Column2</td>
+                    <td>@Model.Column3</td>
+                    <td>@Model.Column4</td>
+                    <td>@Model.Column5</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Column 11</th>
+                    <th>Column 12</th>
+                    <th>Column 13</th>
+                    <th>Column 14</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.Column11</td>
+                    <td>@Model.Column12</td>
+                    <td>@Model.Column13</td>
+                    <td>@Model.Column14</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="navigation">
+        <a asp-controller="Home" asp-action="Customer" asp-route-lmid="@ViewData["LMID"]">Customer</a>
+        <a asp-controller="Home" asp-action="Current" asp-route-lmid="@ViewData["LMID"]">Current</a>
+        <a asp-controller="Home" asp-action="Collateral" asp-route-lmid="@ViewData["LMID"]">Collateral</a>
+        <a asp-controller="Home" asp-action="Tracking" asp-route-lmid="@ViewData["LMID"]">Tracking</a>
+    </div>
+    <div class="content">
+        @RenderBody()
+    </div>
+</body>
+</html>
+
+
+
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Customer}/{lmid?}");
+});
