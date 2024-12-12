@@ -21,24 +21,6 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      background-color: #2e1a47;
-      color: white;
-      font-size: 14px;
-      border-bottom: 2px solid #ddd;
-    }
-
-    .header span {
-      margin-right: 10px;
-    }
-
-    .logout {
-      font-weight: bold;
-    }
-
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -85,13 +67,6 @@
 </head>
 <body>
   <div class="dashboard">
-    <div class="header">
-      <span>Menu</span>
-      <span>Autofill</span>
-      <span>Admin</span>
-      <span>Add Codes</span>
-      <span class="logout">Logout (G08862) Kumar Harshit</span>
-    </div>
     <table class="data-table">
       <thead>
         <tr>
