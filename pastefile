@@ -1,75 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Styled Buttons Layout</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f9;
-    }
+@model YourNamespace.Models.ShawAutoFillModel
 
-    .dashboard {
-      width: 95%;
-      max-width: 1200px;
-      margin: 20px auto;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-    }
+@{
+    ViewData["Title"] = "SHAW Auto Fill";
+}
 
-    .button-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+<div style="width: 600px; margin: auto; border: 1px solid #ccc; padding: 20px; background-color: #eee;">
+    <h2 style="text-align: center;">SHAW Auto Fill</h2>
+    
+    <form asp-action="AutoFill" method="post">
+        <div style="margin-bottom: 10px;">
+            <label>Auto-Fill this Account:</label>
+            <input asp-for="AccountNumber" class="form-control" />
+        </div>
 
-    .button-table td {
-      padding: 10px;
-      text-align: center;
-      background-color: #2e1a47; /* Dark purple background */
-      color: white; /* White text */
-      font-weight: bold;
-      border: 1px solid #ccc;
-      cursor: pointer;
-    }
+        <div style="margin-bottom: 10px;">
+            <label>Choose Source:</label>
+            <select asp-for="SelectedSource" class="form-control">
+                <option value="">Select Source</option>
+                <option value="Source1">Source 1</option>
+                <option value="Source2">Source 2</option>
+            </select>
+        </div>
 
-    .button-table td:hover {
-      background-color: #472d6d; /* Lighter purple on hover */
-    }
+        <div style="margin-bottom: 10px;">
+            <label>Choose Status:</label>
+            <select asp-for="SelectedStatus" class="form-control">
+                <option value="">Select Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+        </div>
 
-    .button-table a {
-      color: white;
-      text-decoration: none;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-</head>
-<body>
-  <div class="dashboard">
-    <table class="button-table">
-      <tr>
-        <td><a href="#">Customer</a></td>
-        <td><a href="#">Current Loan</a></td>
-        <td><a href="#">Collateral</a></td>
-        <td><a href="#">CHLS Checklist</a></td>
-        <td><a href="#">New Loan</a></td>
-      </tr>
-      <tr>
-        <td><a href="#">Notes</a></td>
-        <td><a href="#">SHAW Accounts</a></td>
-        <td><a href="#">Tracking</a></td>
-        <td><a href="#">Settlements</a></td>
-        <td><a href="#">Short Sale / UGI</a></td>
-      </tr>
-    </table>
-  </div>
-</body>
-</html>
+        <div>
+            <label>Assignment:</label><br>
+            <input type="radio" asp-for="Assignment" value="Assign to me" checked /> Assign to me
+            <input type="radio" asp-for="Assignment" value="No Assignment" /> No Assignment
+        </div>
+
+        <div style="margin-top: 10px; text-align: center;">
+            <button type="submit" class="btn btn-primary">GO</button>
+        </div>
+    </form>
+</div>
