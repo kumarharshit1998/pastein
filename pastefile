@@ -1,114 +1,16 @@
-public class ShawAutoFillViewModel
+public class SHAWAutoFillViewModel
 {
+    public string AccountNumber { get; set; }
+
     public string SelectedSource { get; set; }
-    public List<SelectListItem> Sources { get; set; } = new List<SelectListItem>();
+    public List<SelectListItem> Sources { get; set; }
 
     public string SelectedStatus { get; set; }
-    public List<SelectListItem> Statuses { get; set; } = new List<SelectListItem>();
+    public List<SelectListItem> Statuses { get; } = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "Assigned", Text = "Assign to me" },
+        new SelectListItem { Value = "Unassigned", Text = "No Assignment" }
+    };
+
+    public string AssignmentType { get; set; } // Radio button selection
 }
-
-
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using YourNamespace.Models;
-
-public class ShawController : Controller
-{
-    private readonly IConfiguration _configuration;
-
-    public ShawController(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
-    [HttpGet]
-    public IActionResult AutoFill()
-    {
-        var model = new ShawAutoFillViewModel
-        {
-            Sources = GetSources(),
-            Statuses = GetStatuses()
-        };
-
-        return View(model);
-    }
-
-    private List<SelectListItem> GetSources()
-    {
-        var sources = new List<SelectListItem>
-        {
-            new SelectListItem { Value = "0", Text = "Select Source" }
-        };
-
-        string connectionString = _configuration.GetConnectionString("LMConnStr");
-
-        using (SqlConnection conn = new SqlConnection(connectionString))
-        {
-            using (SqlCommand cmd = new SqlCommand("usp_LMG_GetRefSourceForAutoFillDD", conn))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter("@MA", SqlDbType.VarChar) { Value = "M" });
-
-                conn.Open();
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        sources.Add(new SelectListItem
-                        {
-                            Value = reader["REF_ID"].ToString(),
-                            Text = reader["REF_DESC"].ToString()
-                        });
-                    }
-                }
-            }
-        }
-
-        return sources;
-    }
-
-    private List<SelectListItem> GetStatuses()
-    {
-        return new List<SelectListItem>
-        {
-            new SelectListItem { Value = "0", Text = "Select Status" },
-            new SelectListItem { Value = "PENDING", Text = "Pending" },
-            new SelectListItem { Value = "PENDINGNQ", Text = "Pending (Not Queued)" },
-            new SelectListItem { Value = "TRIGGER", Text = "Triggered" },
-            new SelectListItem { Value = "TRIGGERNQ", Text = "Triggered (Not Queued)" },
-            new SelectListItem { Value = "INPROCCCR", Text = "CHLS New" }
-        };
-    }
-}
-
-
-@model YourNamespace.Models.ShawAutoFillViewModel
-
-@{
-    ViewData["Title"] = "SHAW Auto Fill";
-}
-
-<div style="width: 600px; margin: auto; border: 1px solid #ccc; padding: 20px; background-color: #eee;">
-    <h2 style="text-align: center;">SHAW Auto Fill</h2>
-    
-    <form asp-action="AutoFill" method="post">
-        <div style="margin-bottom: 10px;">
-            <label>Choose Source:</label>
-            <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control"></select>
-        </div>
-
-        <div style="margin-bottom: 10px;">
-            <label>Choose Status:</label>
-            <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control"></select>
-        </div>
-
-        <div style="margin-top: 10px; text-align: center;">
-            <button type="submit" class="btn btn-primary">GO</button>
-        </div>
-    </form>
-</div>
