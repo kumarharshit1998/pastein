@@ -1,16 +1,22 @@
-public class SHAWAutoFillViewModel
+public class SourceRepository
 {
-    public string AccountNumber { get; set; }
+    private readonly ApplicationDbContext _context;
 
-    public string SelectedSource { get; set; }
-    public List<SelectListItem> Sources { get; set; }
-
-    public string SelectedStatus { get; set; }
-    public List<SelectListItem> Statuses { get; } = new List<SelectListItem>
+    public SourceRepository(ApplicationDbContext context)
     {
-        new SelectListItem { Value = "Assigned", Text = "Assign to me" },
-        new SelectListItem { Value = "Unassigned", Text = "No Assignment" }
-    };
+        _context = context;
+    }
 
-    public string AssignmentType { get; set; } // Radio button selection
+    public async Task<List<SelectListItem>> GetSourcesAsync()
+    {
+        var sources = await _context.Sources
+            .FromSqlRaw("EXEC GetSources") // Fetch sources from stored procedure
+            .ToListAsync();
+
+        return sources.Select(s => new SelectListItem
+        {
+            Value = s.Id.ToString(),
+            Text = s.Name
+        }).ToList();
+    }
 }
