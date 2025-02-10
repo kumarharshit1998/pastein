@@ -1,4 +1,93 @@
-@model YourNamespace.Models.ShawAutoFillModel
+public class ShawAutoFillViewModel
+{
+    public string SelectedSource { get; set; }
+    public List<SelectListItem> Sources { get; set; } = new List<SelectListItem>();
+
+    public string SelectedStatus { get; set; }
+    public List<SelectListItem> Statuses { get; set; } = new List<SelectListItem>();
+}
+
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using YourNamespace.Models;
+
+public class ShawController : Controller
+{
+    private readonly IConfiguration _configuration;
+
+    public ShawController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    [HttpGet]
+    public IActionResult AutoFill()
+    {
+        var model = new ShawAutoFillViewModel
+        {
+            Sources = GetSources(),
+            Statuses = GetStatuses()
+        };
+
+        return View(model);
+    }
+
+    private List<SelectListItem> GetSources()
+    {
+        var sources = new List<SelectListItem>
+        {
+            new SelectListItem { Value = "0", Text = "Select Source" }
+        };
+
+        string connectionString = _configuration.GetConnectionString("LMConnStr");
+
+        using (SqlConnection conn = new SqlConnection(connectionString))
+        {
+            using (SqlCommand cmd = new SqlCommand("usp_LMG_GetRefSourceForAutoFillDD", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add(new SqlParameter("@MA", SqlDbType.VarChar) { Value = "M" });
+
+                conn.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        sources.Add(new SelectListItem
+                        {
+                            Value = reader["REF_ID"].ToString(),
+                            Text = reader["REF_DESC"].ToString()
+                        });
+                    }
+                }
+            }
+        }
+
+        return sources;
+    }
+
+    private List<SelectListItem> GetStatuses()
+    {
+        return new List<SelectListItem>
+        {
+            new SelectListItem { Value = "0", Text = "Select Status" },
+            new SelectListItem { Value = "PENDING", Text = "Pending" },
+            new SelectListItem { Value = "PENDINGNQ", Text = "Pending (Not Queued)" },
+            new SelectListItem { Value = "TRIGGER", Text = "Triggered" },
+            new SelectListItem { Value = "TRIGGERNQ", Text = "Triggered (Not Queued)" },
+            new SelectListItem { Value = "INPROCCCR", Text = "CHLS New" }
+        };
+    }
+}
+
+
+@model YourNamespace.Models.ShawAutoFillViewModel
 
 @{
     ViewData["Title"] = "SHAW Auto Fill";
@@ -9,32 +98,13 @@
     
     <form asp-action="AutoFill" method="post">
         <div style="margin-bottom: 10px;">
-            <label>Auto-Fill this Account:</label>
-            <input asp-for="AccountNumber" class="form-control" />
-        </div>
-
-        <div style="margin-bottom: 10px;">
             <label>Choose Source:</label>
-            <select asp-for="SelectedSource" class="form-control">
-                <option value="">Select Source</option>
-                <option value="Source1">Source 1</option>
-                <option value="Source2">Source 2</option>
-            </select>
+            <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control"></select>
         </div>
 
         <div style="margin-bottom: 10px;">
             <label>Choose Status:</label>
-            <select asp-for="SelectedStatus" class="form-control">
-                <option value="">Select Status</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-            </select>
-        </div>
-
-        <div>
-            <label>Assignment:</label><br>
-            <input type="radio" asp-for="Assignment" value="Assign to me" checked /> Assign to me
-            <input type="radio" asp-for="Assignment" value="No Assignment" /> No Assignment
+            <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control"></select>
         </div>
 
         <div style="margin-top: 10px; text-align: center;">
