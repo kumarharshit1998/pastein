@@ -1,12 +1,92 @@
+public class SHAWAutoFillModel
+{
+    public string AccountNumber { get; set; }
 
-        var parameter = new SqlParameter("@MA", "M");
+    // Dropdown for sources (comes from stored procedure)
+    public List<SelectListItem> Sources { get; set; }
 
-        var sources = await _context.Sources
-            .FromSqlRaw("EXEC GetSources @MA", parameter) // Pass parameter
-            .ToListAsync();
+    // Dropdown for status (static values)
+    public List<SelectListItem> Statuses { get; set; }
 
-        return sources.Select(s => new SelectListItem
+    // Selected values
+    public string SelectedSource { get; set; }
+    public string SelectedStatus { get; set; }
+
+    // Radio buttons
+    public bool AssignToMe { get; set; }
+}
+
+
+public class SHAWAutoFillController : Controller
+{
+    private readonly SourceRepository _sourceRepo;
+
+    public SHAWAutoFillController(SourceRepository sourceRepo)
+    {
+        _sourceRepo = sourceRepo;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var model = new SHAWAutoFillModel
         {
-            Value = s.REF_ID.ToString(),  // Use REF_ID for value
-            Text = s.REF_DESC             // Use REF_DESC for text
-        }).ToList();
+            Sources = await _sourceRepo.GetSourcesAsync(),
+            Statuses = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "Value 1" },
+                new SelectListItem { Value = "2", Text = "Value 2" },
+                new SelectListItem { Value = "3", Text = "Value 3" },
+                new SelectListItem { Value = "4", Text = "Value 4" }
+            }
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult Submit(SHAWAutoFillModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            // Handle form submission logic here
+            return Json(new { success = true, message = "Successfully Submitted!" });
+        }
+
+        return Json(new { success = false, message = "Submission failed!" });
+    }
+}
+
+
+@model SHAWAutoFillModel
+
+<form asp-action="Submit" method="post">
+    <label>Account Number:</label>
+    <input asp-for="AccountNumber" class="form-control" />
+
+    <label>Choose Source:</label>
+    <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control">
+        <option value="">Select Source</option>
+    </select>
+
+    <label>Choose Status:</label>
+    <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control">
+        <option value="">Select Status</option>
+    </select>
+
+    <label>Assignment:</label>
+    <div>
+        <input type="radio" asp-for="AssignToMe" value="true" /> Assign to me
+        <input type="radio" asp-for="AssignToMe" value="false" /> No Assignment
+    </div>
+
+    <button type="submit">GO</button>
+</form>
+
+<script>
+    $("form").submit(function(e) {
+        e.preventDefault();
+        $.post($(this).attr("action"), $(this).serialize(), function(response) {
+            alert(response.message);
+        });
+    });
+</script>
