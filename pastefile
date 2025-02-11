@@ -1,150 +1,56 @@
-public class SHAWAutoFillModel
-{
-    public string AccountNumber { get; set; }
 
-    // Dropdown Lists
-    public List<SelectListItem> Sources { get; set; } = new List<SelectListItem>();
-    public List<SelectListItem> Statuses { get; set; } = new List<SelectListItem>();
+@model YourViewModel
 
-    // Selected Values
-    public string SelectedSource { get; set; }
-    public string SelectedStatus { get; set; }
-
-    // Radio Button Selection
-    public string AssignmentType { get; set; }  // "AssignToMe" or "NoAssignment"
+@{
+    ViewData["Title"] = "Your View";
 }
 
+<h2>Form Submission</h2>
 
-public class SourceRepository
-{
-    private readonly ApplicationDbContext _dbContext;
-
-    public SourceRepository(ApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
-    public async Task<List<SelectListItem>> GetSourcesAsync()
-    {
-        var sourceList = await _dbContext.SawAutoFillSources
-            .FromSqlRaw("EXEC usp_GetSources @MA = 'M'")
-            .ToListAsync();
-
-        return sourceList.Select(s => new SelectListItem
-        {
-            Value = s.REF_ID.ToString(),  // REF_ID as value
-            Text = s.REF_DESC             // REF_DESC as dropdown text
-        }).ToList();
-    }
-}
-
-
-public class SHAWAutoFillController : Controller
-{
-    private readonly SourceRepository _sourceRepo;
-
-    public SHAWAutoFillController(SourceRepository sourceRepo)
-    {
-        _sourceRepo = sourceRepo;
-    }
-
-    public async Task<IActionResult> Index()
-    {
-        var model = new SHAWAutoFillModel
-        {
-            Sources = await _sourceRepo.GetSourcesAsync(),
-            Statuses = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "", Text = "Choose Status", Selected = true },
-                new SelectListItem { Value = "1", Text = "Value 1" },
-                new SelectListItem { Value = "2", Text = "Value 2" },
-                new SelectListItem { Value = "3", Text = "Value 3" },
-                new SelectListItem { Value = "4", Text = "Value 4" }
-            }
-        };
-
-        return View(model);
-    }
-
-    [HttpPost]
-    public IActionResult Submit(SHAWAutoFillModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            return Json(new 
-            { 
-                success = true, 
-                message = "Successfully Submitted!", 
-                data = new 
-                { 
-                    AccountNumber = model.AccountNumber,
-                    SelectedSource = model.SelectedSource,
-                    SelectedStatus = model.SelectedStatus,
-                    AssignmentType = model.AssignmentType 
-                }
-            });
-        }
-
-        return Json(new { success = false, message = "Submission failed!" });
-    }
-}
-
-
-@model SHAWAutoFillModel
-
-<h2>SHAW Auto Fill</h2>
-
-<form id="autoFillForm" asp-action="Submit" method="post">
+<form method="post">
     <div>
         <label>Account Number:</label>
-        <input asp-for="AccountNumber" class="form-control" required />
+        <input type="text" name="AccountNumber" value="@Model.AccountNumber" required />
     </div>
 
     <div>
-        <label>Choose Source:</label>
-        <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control">
-            <option value="">Select Source</option>  <!-- Default -->
+        <label>Choose Sources:</label>
+        <select name="SelectedSource" required>
+            <option value="">Select Sources</option>
+            @foreach (var source in Model.Sources)
+            {
+                <option value="@source.REF_ID">@source.REF_DESC</option>
+            }
         </select>
     </div>
 
     <div>
         <label>Choose Status:</label>
-        <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control">
+        <select name="SelectedStatus" required>
+            <option value="">Choose Status</option>
+            @foreach (var status in Model.StatusList)
+            {
+                <option value="@status">@status</option>
+            }
         </select>
     </div>
 
     <div>
-        <label>Assignment:</label><br>
-        <input type="radio" asp-for="AssignmentType" value="AssignToMe" /> Assign to me
-        <input type="radio" asp-for="AssignmentType" value="NoAssignment" /> No Assignment
+        <label>Assignment:</label><br />
+        <input type="radio" name="AssignmentType" value="Assign to me" required @(Model.AssignmentType == "Assign to me" ? "checked" : "") /> Assign to Me
+        <input type="radio" name="AssignmentType" value="No Assignment" required @(Model.AssignmentType == "No Assignment" ? "checked" : "") /> No Assignment
     </div>
 
-    <button type="submit" class="btn btn-primary">GO</button>
+    <div>
+        <button type="submit">Go</button>
+    </div>
 </form>
 
-<hr />
+@if (!string.IsNullOrEmpty(ViewBag.Message))
+{
+    <div style="color:green; margin-top:10px;">
+        <strong>@ViewBag.Message</strong>
+    </div>
+}
 
-<h3>Submitted Data</h3>
-<div id="result"></div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $("#autoFillForm").submit(function (e) {
-        e.preventDefault();
-        
-        $.post($(this).attr("action"), $(this).serialize(), function (response) {
-            if (response.success) {
-                $("#result").html(`
-                    <p><b>Account Number:</b> ${response.data.AccountNumber}</p>
-                    <p><b>Selected Source:</b> ${response.data.SelectedSource}</p>
-                    <p><b>Selected Status:</b> ${response.data.SelectedStatus}</p>
-                    <p><b>Assignment Type:</b> ${response.data.AssignmentType}</p>
-                `);
-            } else {
-                alert(response.message);
-            }
-        });
-    });
-</script>
-
-
+    
