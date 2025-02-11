@@ -1,3 +1,51 @@
+public class SHAWAutoFillViewModel
+{
+    public string AccountNumber { get; set; }
+
+    public string SelectedSource { get; set; }
+    public List<SelectListItem> Sources { get; set; } = new List<SelectListItem>();
+
+    public string SelectedStatus { get; set; }
+    public List<SelectListItem> Statuses { get; } = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "1", Text = "Value 1" },
+        new SelectListItem { Value = "2", Text = "Value 2" },
+        new SelectListItem { Value = "3", Text = "Value 3" },
+        new SelectListItem { Value = "4", Text = "Value 4" }
+    };
+
+    public string AssignmentType { get; set; } // Radio button selection
+}
+
+
+
+
+public class SourceRepository
+{
+    private readonly ApplicationDbContext _context;
+
+    public SourceRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<List<SelectListItem>> GetSourcesAsync()
+    {
+        var sources = await _context.Sources
+            .FromSqlRaw("EXEC GetSources") // Call stored procedure
+            .ToListAsync();
+
+        return sources.Select(s => new SelectListItem
+        {
+            Value = s.Id.ToString(),
+            Text = s.Name
+        }).ToList();
+    }
+}
+
+
+
+
 public class SHAWAutoFillController : Controller
 {
     private readonly SourceRepository _sourceRepository;
@@ -22,8 +70,8 @@ public class SHAWAutoFillController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Normally, save the data to DB here
-            TempData["SuccessMessage"] = "Form submitted successfully!";
+            // Here you can save the form data to DB if required
+            TempData["SuccessMessage"] = "Successfully Submitted!";
             return RedirectToAction("Index"); // Redirect to clear the form
         }
 
@@ -32,3 +80,52 @@ public class SHAWAutoFillController : Controller
         return View(model);
     }
 }
+
+
+
+@model SHAWAutoFillViewModel
+
+<div class="container">
+    <h2>SHAW Auto Fill</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <form asp-action="Index" method="post">
+        <div class="form-group">
+            <label for="accountNumber">Enter SHAW Account Number:</label>
+            <input asp-for="AccountNumber" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="source">Choose Source:</label>
+            <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control" required>
+                <option value="">Select Source</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="status">Choose Status:</label>
+            <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control" required>
+                <option value="">Select Status</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Assignment Type:</label><br>
+            <input type="radio" asp-for="AssignmentType" value="AssignToMe" required /> Assign to me
+            <input type="radio" asp-for="AssignmentType" value="NoAssignment" /> No Assignment
+        </div>
+
+        <button type="submit" class="btn btn-primary">GO</button>
+    </form>
+</div>
+
+
+builder.Services.AddScoped<SourceRepository>();
+
+
