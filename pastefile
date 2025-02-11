@@ -2,18 +2,40 @@ public class SHAWAutoFillModel
 {
     public string AccountNumber { get; set; }
 
-    // Dropdown for sources (comes from stored procedure)
-    public List<SelectListItem> Sources { get; set; }
+    // Dropdown Lists
+    public List<SelectListItem> Sources { get; set; } = new List<SelectListItem>();
+    public List<SelectListItem> Statuses { get; set; } = new List<SelectListItem>();
 
-    // Dropdown for status (static values)
-    public List<SelectListItem> Statuses { get; set; }
-
-    // Selected values
+    // Selected Values
     public string SelectedSource { get; set; }
     public string SelectedStatus { get; set; }
 
-    // Radio buttons
-    public bool AssignToMe { get; set; }
+    // Radio Button Selection
+    public string AssignmentType { get; set; }  // "AssignToMe" or "NoAssignment"
+}
+
+
+public class SourceRepository
+{
+    private readonly ApplicationDbContext _dbContext;
+
+    public SourceRepository(ApplicationDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
+    public async Task<List<SelectListItem>> GetSourcesAsync()
+    {
+        var sourceList = await _dbContext.SawAutoFillSources
+            .FromSqlRaw("EXEC usp_GetSources @MA = 'M'")
+            .ToListAsync();
+
+        return sourceList.Select(s => new SelectListItem
+        {
+            Value = s.REF_ID.ToString(),  // REF_ID as value
+            Text = s.REF_DESC             // REF_DESC as dropdown text
+        }).ToList();
+    }
 }
 
 
@@ -33,6 +55,7 @@ public class SHAWAutoFillController : Controller
             Sources = await _sourceRepo.GetSourcesAsync(),
             Statuses = new List<SelectListItem>
             {
+                new SelectListItem { Value = "", Text = "Choose Status", Selected = true },
                 new SelectListItem { Value = "1", Text = "Value 1" },
                 new SelectListItem { Value = "2", Text = "Value 2" },
                 new SelectListItem { Value = "3", Text = "Value 3" },
@@ -48,8 +71,18 @@ public class SHAWAutoFillController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Handle form submission logic here
-            return Json(new { success = true, message = "Successfully Submitted!" });
+            return Json(new 
+            { 
+                success = true, 
+                message = "Successfully Submitted!", 
+                data = new 
+                { 
+                    AccountNumber = model.AccountNumber,
+                    SelectedSource = model.SelectedSource,
+                    SelectedStatus = model.SelectedStatus,
+                    AssignmentType = model.AssignmentType 
+                }
+            });
         }
 
         return Json(new { success = false, message = "Submission failed!" });
@@ -59,34 +92,59 @@ public class SHAWAutoFillController : Controller
 
 @model SHAWAutoFillModel
 
-<form asp-action="Submit" method="post">
-    <label>Account Number:</label>
-    <input asp-for="AccountNumber" class="form-control" />
+<h2>SHAW Auto Fill</h2>
 
-    <label>Choose Source:</label>
-    <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control">
-        <option value="">Select Source</option>
-    </select>
-
-    <label>Choose Status:</label>
-    <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control">
-        <option value="">Select Status</option>
-    </select>
-
-    <label>Assignment:</label>
+<form id="autoFillForm" asp-action="Submit" method="post">
     <div>
-        <input type="radio" asp-for="AssignToMe" value="true" /> Assign to me
-        <input type="radio" asp-for="AssignToMe" value="false" /> No Assignment
+        <label>Account Number:</label>
+        <input asp-for="AccountNumber" class="form-control" required />
     </div>
 
-    <button type="submit">GO</button>
+    <div>
+        <label>Choose Source:</label>
+        <select asp-for="SelectedSource" asp-items="Model.Sources" class="form-control">
+            <option value="">Select Source</option>  <!-- Default -->
+        </select>
+    </div>
+
+    <div>
+        <label>Choose Status:</label>
+        <select asp-for="SelectedStatus" asp-items="Model.Statuses" class="form-control">
+        </select>
+    </div>
+
+    <div>
+        <label>Assignment:</label><br>
+        <input type="radio" asp-for="AssignmentType" value="AssignToMe" /> Assign to me
+        <input type="radio" asp-for="AssignmentType" value="NoAssignment" /> No Assignment
+    </div>
+
+    <button type="submit" class="btn btn-primary">GO</button>
 </form>
 
+<hr />
+
+<h3>Submitted Data</h3>
+<div id="result"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $("form").submit(function(e) {
+    $("#autoFillForm").submit(function (e) {
         e.preventDefault();
-        $.post($(this).attr("action"), $(this).serialize(), function(response) {
-            alert(response.message);
+        
+        $.post($(this).attr("action"), $(this).serialize(), function (response) {
+            if (response.success) {
+                $("#result").html(`
+                    <p><b>Account Number:</b> ${response.data.AccountNumber}</p>
+                    <p><b>Selected Source:</b> ${response.data.SelectedSource}</p>
+                    <p><b>Selected Status:</b> ${response.data.SelectedStatus}</p>
+                    <p><b>Assignment Type:</b> ${response.data.AssignmentType}</p>
+                `);
+            } else {
+                alert(response.message);
+            }
         });
     });
 </script>
+
+
