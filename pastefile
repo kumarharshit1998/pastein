@@ -1,17 +1,31 @@
-public class YourRepository
+public class YourController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly YourRepository _repository;
 
-    public YourRepository(ApplicationDbContext context)
+    public YourController(YourRepository repository)
     {
-        _context = context;
+        _repository = repository;
     }
 
-    public List<SourceModel> GetSources()
+    [HttpGet]
+    public IActionResult YourView()
     {
-        return _context.Sources
-            .FromSqlRaw("EXEC YourStoredProcedure @MA = {0}", "M")
-            .Select(s => new SourceModel { REF_ID = s.REF_ID, REF_DESC = s.REF_DESC })
-            .ToList();
+        var model = new YourViewModel
+        {
+            Sources = _repository.GetSources() // Fetch data from stored procedure
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public IActionResult YourView(YourViewModel model)
+    {
+        ViewBag.Message = $"Account: {model.AccountNumber}, Source: {model.SelectedSource}, Status: {model.SelectedStatus}, Assignment: {model.AssignmentType}";
+
+        // Reload dropdown values after form submission
+        model.Sources = _repository.GetSources();
+        model.StatusList = new List<string> { "Value 1", "Value 2", "Value 3", "Value 4" };
+
+        return View(model);
     }
 }
