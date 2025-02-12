@@ -1,18 +1,17 @@
-public class YourViewModel
+public class YourRepository
 {
-    public string AccountNumber { get; set; }
+    private readonly ApplicationDbContext _context;
 
-    public string SelectedSource { get; set; }
-    public List<SourceModel> Sources { get; set; } = new List<SourceModel>();
+    public YourRepository(ApplicationDbContext context)
+    {
+        _context = context;
+    }
 
-    public string SelectedStatus { get; set; }
-    public List<string> StatusList { get; set; } = new List<string> { "Value 1", "Value 2", "Value 3", "Value 4" };
-
-    public string AssignmentType { get; set; }
-}
-
-public class SourceModel
-{
-    public string REF_ID { get; set; }  // Dropdown Value
-    public string REF_DESC { get; set; } // Dropdown Text
+    public List<SourceModel> GetSources()
+    {
+        return _context.Sources
+            .FromSqlRaw("EXEC YourStoredProcedure @MA = {0}", "M")
+            .Select(s => new SourceModel { REF_ID = s.REF_ID, REF_DESC = s.REF_DESC })
+            .ToList();
+    }
 }
