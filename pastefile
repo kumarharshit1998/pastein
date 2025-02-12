@@ -1,9 +1,18 @@
-
-[HttpPost]
-public IActionResult YourView(YourViewModel model)
+public class YourViewModel
 {
-    // Do something with the submitted data
-    ViewBag.Message = $"Account: {model.AccountNumber}, Source: {model.SelectedSource}, Status: {model.SelectedStatus}, Assignment: {model.AssignmentType}";
+    public string AccountNumber { get; set; }
 
-    return View(model);
+    public string SelectedSource { get; set; }
+    public List<SourceModel> Sources { get; set; } = new List<SourceModel>();
+
+    public string SelectedStatus { get; set; }
+    public List<string> StatusList { get; set; } = new List<string> { "Value 1", "Value 2", "Value 3", "Value 4" };
+
+    public string AssignmentType { get; set; }
+}
+
+public class SourceModel
+{
+    public string REF_ID { get; set; }  // Dropdown Value
+    public string REF_DESC { get; set; } // Dropdown Text
 }
