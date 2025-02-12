@@ -1,31 +1,53 @@
-public class YourController : Controller
+@model YourViewModel
+
+@{
+    ViewData["Title"] = "Form Submission";
+}
+
+<h2>Form Submission</h2>
+
+<form method="post">
+    <div>
+        <label>Account Number:</label>
+        <input type="text" name="AccountNumber" value="@Model.AccountNumber" required />
+    </div>
+
+    <div>
+        <label>Choose Sources:</label>
+        <select name="SelectedSource" required>
+            <option value="">Select Sources</option>
+            @foreach (var source in Model.Sources)
+            {
+                <option value="@source.REF_ID">@source.REF_DESC</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Choose Status:</label>
+        <select name="SelectedStatus" required>
+            <option value="">Choose Status</option>
+            @foreach (var status in Model.StatusList)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <label>Assignment:</label><br />
+        <input type="radio" name="AssignmentType" value="Assign to me" required @(Model.AssignmentType == "Assign to me" ? "checked" : "") /> Assign to Me
+        <input type="radio" name="AssignmentType" value="No Assignment" required @(Model.AssignmentType == "No Assignment" ? "checked" : "") /> No Assignment
+    </div>
+
+    <div>
+        <button type="submit">Go</button>
+    </div>
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.Message))
 {
-    private readonly YourRepository _repository;
-
-    public YourController(YourRepository repository)
-    {
-        _repository = repository;
-    }
-
-    [HttpGet]
-    public IActionResult YourView()
-    {
-        var model = new YourViewModel
-        {
-            Sources = _repository.GetSources() // Fetch data from stored procedure
-        };
-        return View(model);
-    }
-
-    [HttpPost]
-    public IActionResult YourView(YourViewModel model)
-    {
-        ViewBag.Message = $"Account: {model.AccountNumber}, Source: {model.SelectedSource}, Status: {model.SelectedStatus}, Assignment: {model.AssignmentType}";
-
-        // Reload dropdown values after form submission
-        model.Sources = _repository.GetSources();
-        model.StatusList = new List<string> { "Value 1", "Value 2", "Value 3", "Value 4" };
-
-        return View(model);
-    }
+    <div style="color:green; margin-top:10px;">
+        <strong>@ViewBag.Message</strong>
+    </div>
 }
