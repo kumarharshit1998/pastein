@@ -1,133 +1,52 @@
-@model SHAWAutofillModel
+@model ManualAddViewModel
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHAW Auto Fill</title>
-    <style>
-        /* Container for the form */
-        .shaw-autofill-container {
-            background-color: #4A326B; /* Matches the first image */
-            padding: 15px;
-            border-radius: 5px;
-            color: white;
-            width: 50%;
-            margin: auto;
-            font-family: Arial, sans-serif;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-        }
+<h2>Manual Add Page</h2>
 
-        /* Row styling for form elements */
-        .row {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Label styling */
-        .row label {
-            width: 150px;
-            font-weight: bold;
-        }
-
-        /* Styling for input fields and dropdowns */
-        .row select, .row input[type="text"] {
-            flex: 1;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            font-size: 14px;
-        }
-
-        /* Styling for radio buttons */
-        .radio-group {
-            display: flex;
-            align-items: center;
-        }
-
-        .radio-group input[type="radio"] {
-            margin-left: 10px;
-        }
-
-        /* Styling for submit button */
-        .go-button {
-            background-color: #ccc;
-            color: black;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .go-button:hover {
-            background-color: #bbb;
-        }
-
-        /* Message box for feedback */
-        .message-box {
-            color: green;
-            margin-top: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-
-    <h2 style="text-align:center;">SHAW Auto Fill</h2>
-
-    <div class="shaw-autofill-container">
-        <form method="post">
-            <div class="row">
-                <label>Auto-Fill this Account:</label>
-                <input type="text" name="AccountNumber" value="@Model.AccountNumber" required>
-            </div>
-
-            <div class="row">
-                <label>Choose Source:</label>
-                <select name="SelectedSource" required>
-                    <option value="">Select Source</option>
-                    @foreach (var source in Model.Sources)
-                    {
-                        <option value="@source.REF_ID">@source.REF_DESC</option>
-                    }
-                </select>
-            </div>
-
-            <div class="row">
-                <label>Choose Status:</label>
-                <select name="SelectedStatus" required>
-                    <option value="">Select Status</option>
-                    @foreach (var status in Model.StatusList)
-                    {
-                        <option value="@status">@status</option>
-                    }
-                </select>
-            </div>
-
-            <div class="row">
-                <label>Assignment:</label>
-                <div class="radio-group">
-                    <input type="radio" name="AssignmentType" value="Assign to me" required @(Model.AssignmentType == "Assign to me" ? "checked" : "")> Assign to Me
-                    <input type="radio" name="AssignmentType" value="No Assignment" required @(Model.AssignmentType == "No Assignment" ? "checked" : "")> No Assignment
-                </div>
-            </div>
-
-            <div class="row" style="justify-content: center;">
-                <button type="submit" class="go-button">GO</button>
-            </div>
-        </form>
+<form asp-action="Submit" method="post">
+    <div>
+        <label>Field 1</label>
+        <input type="text" asp-for="Field1" />
     </div>
+    <div>
+        <label>Field 2</label>
+        <input type="text" asp-for="Field2" />
+    </div>
+    <div>
+        <label>Field 3</label>
+        <input type="text" asp-for="Field3" />
+    </div>
+    <div>
+        <label>Field 4</label>
+        <input type="text" asp-for="Field4" />
+    </div>
+    <div>
+        <label>Field 5</label>
+        <input type="text" asp-for="Field5" />
+    </div>
+    <div>
+        <label>Field 6</label>
+        <input type="text" asp-for="Field6" />
+    </div>
+    <div>
+        <label>Field 7</label>
+        <input type="text" asp-for="Field7" />
+    </div>
+    <div>
+        <label>Field 8</label>
+        <input type="text" asp-for="Field8" />
+    </div>
+    <div>
+        <label>Field 9</label>
+        <input type="text" asp-for="Field9" />
+    </div>
+    <div>
+        <label>Field 10</label>
+        <input type="text" asp-for="Field10" />
+    </div>
+    
+    <button type="submit">Submit</button>
+</form>
 
-    @if (!string.IsNullOrEmpty(ViewBag.Message))
-    {
-        <div class="message-box">
-            <strong>@ViewBag.Message</strong>
-        </div>
-    }
-
-</body>
-</html>
+<form asp-action="FetchFromApi" method="post">
+    <button type="submit">Fetch From API</button>
+</form>
