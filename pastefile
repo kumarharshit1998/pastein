@@ -1,211 +1,26 @@
-namespace YourApp.Models
+public class ManualAutoFillModel
 {
-    public class ManualAddModel
-    {
-        public string UserId { get; set; }
-        public string AccountNo { get; set; }
-        public string SSN { get; set; }
-        public decimal Balance { get; set; }
-        public string LoanLine { get; set; }
-        public int LienPos { get; set; }
-        public string PriFirstName { get; set; }
-        public string PriLastName { get; set; }
-        public string PriAdd1 { get; set; }
-        public string PriAdd2 { get; set; }
-        public string PriCity { get; set; }
-        public string PriState { get; set; }
-        public string PriZip { get; set; }
-        public string PriAc { get; set; }
-        public string PriPhone { get; set; }
-        public string Otac { get; set; }
-        public string PriOtherPhone { get; set; }
-        public string CollAdd1 { get; set; }
-        public string CollAdd2 { get; set; }
-        public string CollCity { get; set; }
-        public string CollState { get; set; }
-        public string CollZip { get; set; }
-        public long LMDBID { get; set; }
-    }
+    public string USERID { get; set; }
+    public string AccountNo { get; set; }
+    public string SSN { get; set; }
+    public decimal BALANCE { get; set; }
+    public string LOANLINE { get; set; }
+    public int LIENPOS { get; set; }
+    public string PRIFNAME { get; set; }
+    public string PRILNAME { get; set; }
+    public string PRIADD1 { get; set; }
+    public string PRIADD2 { get; set; }
+    public string PRICITY { get; set; }
+    public string PRIST { get; set; }
+    public string PRIZIP { get; set; }
+    public string PRIAC { get; set; }
+    public string PRIPHONE { get; set; }
+    public string OTAC {get; set;}
+    public string PRIOTHRPH { get; set; }
+    public string COLLADD1 { get; set; }
+    public string COLLADD2 { get; set; }
+    public string COLLCITY { get; set; }
+    public string COLLST { get; set; }
+    public string COLLZIP { get; set; }
+    public string LMDBID { get; set; }
 }
-
-
-
-
-
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
-using System.Threading.Tasks;
-using YourApp.Data;
-using YourApp.Models;
-
-namespace YourApp.Repositories
-{
-    public class ManualAddRepository
-    {
-        private readonly ApplicationDbContext _context;
-
-        public ManualAddRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<long> AddProspectAsync(ManualAddModel model)
-        {
-            long lmdbid = 0;
-
-            using (var connection = (SqlConnection)_context.Database.GetDbConnection())
-            {
-                await connection.OpenAsync();
-
-                using (var command = new SqlCommand("usp_LMG_ManualAddprospect", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    command.Parameters.AddWithValue("@USERID", model.UserId);
-                    command.Parameters.AddWithValue("@AccountNo", model.AccountNo);
-                    command.Parameters.AddWithValue("@SSN", model.SSN);
-                    command.Parameters.AddWithValue("@BALANCE", model.Balance);
-                    command.Parameters.AddWithValue("@LOANLINE", model.LoanLine);
-                    command.Parameters.AddWithValue("@LIENPOS", model.LienPos);
-                    command.Parameters.AddWithValue("@PRIFNAME", model.PriFirstName);
-                    command.Parameters.AddWithValue("@PRILNAME", model.PriLastName);
-                    command.Parameters.AddWithValue("@PRIADD1", model.PriAdd1);
-                    command.Parameters.AddWithValue("@PRIADD2", model.PriAdd2);
-                    command.Parameters.AddWithValue("@PRICITY", model.PriCity);
-                    command.Parameters.AddWithValue("@PRIST", model.PriState);
-                    command.Parameters.AddWithValue("@PRIZIP", model.PriZip);
-                    command.Parameters.AddWithValue("@PRIAC", model.PriAc);
-                    command.Parameters.AddWithValue("@PRIPHONE", model.PriPhone);
-                    command.Parameters.AddWithValue("@OTAC", model.Otac);
-                    command.Parameters.AddWithValue("@PRIOTHRPH", model.PriOtherPhone);
-                    command.Parameters.AddWithValue("@COLLADD1", model.CollAdd1);
-                    command.Parameters.AddWithValue("@COLLADD2", model.CollAdd2);
-                    command.Parameters.AddWithValue("@COLLCITY", model.CollCity);
-                    command.Parameters.AddWithValue("@COLLST", model.CollState);
-                    command.Parameters.AddWithValue("@COLLZIP", model.CollZip);
-
-                    var outputParam = new SqlParameter("@LMDBID", SqlDbType.BigInt)
-                    {
-                        Direction = ParameterDirection.Output
-                    };
-                    command.Parameters.Add(outputParam);
-
-                    await command.ExecuteNonQueryAsync();
-                    lmdbid = (long)(outputParam.Value ?? 0);
-                }
-            }
-
-            return lmdbid;
-        }
-    }
-}
-
-
-
-
-
-
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using YourApp.Models;
-using YourApp.Repositories;
-
-namespace YourApp.Controllers
-{
-    public class ManualAddController : Controller
-    {
-        private readonly ManualAddRepository _repository;
-
-        public ManualAddController(ManualAddRepository repository)
-        {
-            _repository = repository;
-        }
-
-        public IActionResult Index()
-        {
-            return View(new ManualAddModel());
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddProspect(ManualAddModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                long lmdbid = await _repository.AddProspectAsync(model);
-                ViewBag.LMDBID = lmdbid;
-                return View("Success");
-            }
-
-            return View("Index", model);
-        }
-    }
-}
-
-
-
-
-@model YourApp.Models.ManualAddModel
-
-<form method="post" asp-action="AddProspect">
-    <div>
-        <label>User ID</label>
-        <input type="text" asp-for="UserId" />
-    </div>
-    <div>
-        <label>Account No</label>
-        <input type="text" asp-for="AccountNo" />
-    </div>
-    <div>
-        <label>SSN</label>
-        <input type="text" asp-for="SSN" />
-    </div>
-    <div>
-        <label>Balance</label>
-        <input type="text" asp-for="Balance" />
-    </div>
-    <div>
-        <label>Loan Line</label>
-        <input type="text" asp-for="LoanLine" />
-    </div>
-    <div>
-        <label>Lien Position</label>
-        <input type="number" asp-for="LienPos" />
-    </div>
-    <div>
-        <label>Primary First Name</label>
-        <input type="text" asp-for="PriFirstName" />
-    </div>
-    <div>
-        <label>Primary Last Name</label>
-        <input type="text" asp-for="PriLastName" />
-    </div>
-    <div>
-        <label>Primary Address 1</label>
-        <input type="text" asp-for="PriAdd1" />
-    </div>
-    <div>
-        <label>Primary Address 2</label>
-        <input type="text" asp-for="PriAdd2" />
-    </div>
-    <div>
-        <label>City</label>
-        <input type="text" asp-for="PriCity" />
-    </div>
-    <div>
-        <label>State</label>
-        <input type="text" asp-for="PriState" />
-    </div>
-    <div>
-        <label>ZIP</label>
-        <input type="text" asp-for="PriZip" />
-    </div>
-    <!-- Add all other fields similarly -->
-    <button type="submit">Submit</button>
-</form>
-
-
-<h2>Prospect Added Successfully</h2>
-<p>LMDBID: @ViewBag.LMDBID</p>
-<a asp-action="Index">Add Another</a>
-
