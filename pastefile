@@ -1,38 +1,23 @@
-<style>
-    .form-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: space-between;
-        max-width: 90%; /* Reduces overall width */
-        margin: auto;
-    }
 
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 calc(25% - 10px); /* Makes 4 columns per row */
-        min-width: 150px; /* Prevents fields from shrinking too much */
-    }
-
-    label {
-        font-size: 14px;
-        font-weight: bold;
-    }
-
-    select, input {
-        padding: 6px;
-        font-size: 14px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    button {
-        padding: 8px 15px;
-        background-color: #2E1A47;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-</style>
+        public string UserId { get; set; }
+        public string AccountNo { get; set; }
+        public string SSN { get; set; }
+        public decimal Balance { get; set; }
+        public string LoanLine { get; set; }
+        public int LienPos { get; set; }
+        public string PriFirstName { get; set; }
+        public string PriLastName { get; set; }
+        public string PriAdd1 { get; set; }
+        public string PriAdd2 { get; set; }
+        public string PriCity { get; set; }
+        public string PriState { get; set; }
+        public string PriZip { get; set; }
+        public string PriAc { get; set; }
+        public string PriPhone { get; set; }
+        public string Otac { get; set; }
+        public string PriOtherPhone { get; set; }
+        public string CollAdd1 { get; set; }
+        public string CollAdd2 { get; set; }
+        public string CollCity { get; set; }
+        public string CollState { get; set; }
+        public string CollZip { get; set; }
