@@ -5,9 +5,7 @@
         gap: 15px;
         align-items: center;
         justify-content: space-between;
-        width: 50%; /* Reduces container size to half */
-        margin: auto; /* Centers the form */
-        transform: scale(0.5); /* Shrinks everything to 50% */
+        max-width: 100%;
     }
 
     .form-group {
