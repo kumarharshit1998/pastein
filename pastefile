@@ -1,55 +1,61 @@
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Data;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using YourApp.Models;
+using YourApp.Repositories;
+using System.Threading.Tasks;
 
-namespace YourApp.Repositories
+namespace YourApp.Controllers
 {
-    public class ManualAddRepository
+    public class ManualAddController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ManualAddRepository _repository;
 
-        public ManualAddRepository(ApplicationDbContext context)
+        public ManualAddController(ManualAddRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        public async Task<long> AddProspectAsync(ManualAddModel model)
+        public IActionResult Index()
         {
-            // Prepare stored procedure parameters
-            var userId = new SqlParameter("@USERID", model.UserId);
-            var accountNo = new SqlParameter("@AccountNo", model.AccountNo);
-            var ssn = new SqlParameter("@SSN", model.SSN);
-            var balance = new SqlParameter("@BALANCE", model.Balance);
-            var loanLine = new SqlParameter("@LOANLINE", model.LoanLine);
-            var lienPos = new SqlParameter("@LIENPOS", model.LienPos);
-            var priFirstName = new SqlParameter("@PRIFNAME", model.PriFirstName);
-            var priLastName = new SqlParameter("@PRILNAME", model.PriLastName);
-            var priAdd1 = new SqlParameter("@PRIADD1", model.PriAdd1);
-            var priAdd2 = new SqlParameter("@PRIADD2", model.PriAdd2);
-            var priCity = new SqlParameter("@PRICITY", model.PriCity);
-            var priState = new SqlParameter("@PRIST", model.PriState);
-            var priZip = new SqlParameter("@PRIZIP", model.PriZip);
-            var priAc = new SqlParameter("@PRIAC", model.PriAc);
-            var priPhone = new SqlParameter("@PRIPHONE", model.PriPhone);
-            var otac = new SqlParameter("@OTAC", model.Otac);
-            var priOtherPhone = new SqlParameter("@PRIOTHRPH", model.PriOtherPhone);
-            var collAdd1 = new SqlParameter("@COLLADD1", model.CollAdd1);
-            var collAdd2 = new SqlParameter("@COLLADD2", model.CollAdd2);
-            var collCity = new SqlParameter("@COLLCITY", model.CollCity);
-            var collState = new SqlParameter("@COLLST", model.CollState);
-            var collZip = new SqlParameter("@COLLZIP", model.CollZip);
-            var lmdbId = new SqlParameter("@LMDBID", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
+            return View();
+        }
 
-            // Execute stored procedure
-            await _context.Database.ExecuteSqlRawAsync(
-                "EXEC dbo.usp_LMG_ManualAddprospect @USERID, @AccountNo, @SSN, @BALANCE, @LOANLINE, @LIENPOS, @PRIFNAME, @PRILNAME, @PRIADD1, @PRIADD2, @PRICITY, @PRIST, @PRIZIP, @PRIAC, @PRIPHONE, @OTAC, @PRIOTHRPH, @COLLADD1, @COLLADD2, @COLLCITY, @COLLST, @COLLZIP, @LMDBID",
-                userId, accountNo, ssn, balance, loanLine, lienPos, priFirstName, priLastName, priAdd1, priAdd2, priCity, priState, priZip, priAc, priPhone, otac, priOtherPhone, collAdd1, collAdd2, collCity, collState, collZip, lmdbId
-            );
-
-            return Convert.ToInt64(lmdbId.Value);
+        [HttpPost]
+        public async Task<IActionResult> AddProspect(ManualAddModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                long lmdbId = await _repository.AddProspectAsync(model);
+                // Optionally, pass the LMDBID to a success view
+                ViewBag.LMDBID = lmdbId;
+                return View("Success"); // You can create a Success view
+            }
+            return View("Index"); // Return the form if there are validation errors
         }
     }
 }
+
+
+
+@model YourApp.Models.ManualAddModel
+
+<form method="post" asp-action="AddProspect">
+    <div>
+        <label for="UserId">UserId</label>
+        <input type="text" id="UserId" name="UserId" asp-for="UserId" />
+    </div>
+    <div>
+        <label for="AccountNo">AccountNo</label>
+        <input type="text" id="AccountNo" name="AccountNo" asp-for="AccountNo" />
+    </div>
+    <div>
+        <label for="SSN">SSN</label>
+        <input type="text" id="SSN" name="SSN" asp-for="SSN" />
+    </div>
+    <div>
+        <label for="Balance">Balance</label>
+        <input type="number" id="Balance" name="Balance" asp-for="Balance" />
+    </div>
+    <!-- Add other fields as needed -->
+
+    <button type="submit">Submit</button>
+</form>
