@@ -1,41 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using YourApp.Models;
-using YourApp.Repositories;
-using System.Threading.Tasks;
-
-namespace YourApp.Controllers
-{
-    public class ManualAddController : Controller
-    {
-        private readonly ManualAddRepository _repository;
-
-        public ManualAddController(ManualAddRepository repository)
-        {
-            _repository = repository;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddProspect(ManualAddModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                long lmdbId = await _repository.AddProspectAsync(model);
-                // Optionally, pass the LMDBID to a success view
-                ViewBag.LMDBID = lmdbId;
-                return View("Success"); // You can create a Success view
-            }
-            return View("Index"); // Return the form if there are validation errors
-        }
-    }
-}
-
-
-
 @model YourApp.Models.ManualAddModel
 
 <form method="post" asp-action="AddProspect">
@@ -53,9 +15,80 @@ namespace YourApp.Controllers
     </div>
     <div>
         <label for="Balance">Balance</label>
-        <input type="number" id="Balance" name="Balance" asp-for="Balance" />
+        <input type="text" id="Balance" name="Balance" asp-for="Balance" />
     </div>
-    <!-- Add other fields as needed -->
+    <div>
+        <label for="LoanLine">Loan Line</label>
+        <input type="text" id="LoanLine" name="LoanLine" asp-for="LoanLine" />
+    </div>
+    <div>
+        <label for="LienPos">Lien Position</label>
+        <input type="number" id="LienPos" name="LienPos" asp-for="LienPos" />
+    </div>
+    <div>
+        <label for="PriFirstName">First Name</label>
+        <input type="text" id="PriFirstName" name="PriFirstName" asp-for="PriFirstName" />
+    </div>
+    <div>
+        <label for="PriLastName">Last Name</label>
+        <input type="text" id="PriLastName" name="PriLastName" asp-for="PriLastName" />
+    </div>
+    <div>
+        <label for="PriAdd1">Address Line 1</label>
+        <input type="text" id="PriAdd1" name="PriAdd1" asp-for="PriAdd1" />
+    </div>
+    <div>
+        <label for="PriAdd2">Address Line 2</label>
+        <input type="text" id="PriAdd2" name="PriAdd2" asp-for="PriAdd2" />
+    </div>
+    <div>
+        <label for="PriCity">City</label>
+        <input type="text" id="PriCity" name="PriCity" asp-for="PriCity" />
+    </div>
+    <div>
+        <label for="PriState">State</label>
+        <input type="text" id="PriState" name="PriState" asp-for="PriState" />
+    </div>
+    <div>
+        <label for="PriZip">Zip</label>
+        <input type="text" id="PriZip" name="PriZip" asp-for="PriZip" />
+    </div>
+    <div>
+        <label for="PriAc">Area Code</label>
+        <input type="text" id="PriAc" name="PriAc" asp-for="PriAc" />
+    </div>
+    <div>
+        <label for="PriPhone">Phone</label>
+        <input type="text" id="PriPhone" name="PriPhone" asp-for="PriPhone" />
+    </div>
+    <div>
+        <label for="Otac">Other Area Code</label>
+        <input type="text" id="Otac" name="Otac" asp-for="Otac" />
+    </div>
+    <div>
+        <label for="PriOtherPhone">Other Phone</label>
+        <input type="text" id="PriOtherPhone" name="PriOtherPhone" asp-for="PriOtherPhone" />
+    </div>
+    <div>
+        <label for="CollAdd1">Collateral Address Line 1</label>
+        <input type="text" id="CollAdd1" name="CollAdd1" asp-for="CollAdd1" />
+    </div>
+    <div>
+        <label for="CollAdd2">Collateral Address Line 2</label>
+        <input type="text" id="CollAdd2" name="CollAdd2" asp-for="CollAdd2" />
+    </div>
+    <div>
+        <label for="CollCity">Collateral City</label>
+        <input type="text" id="CollCity" name="CollCity" asp-for="CollCity" />
+    </div>
+    <div>
+        <label for="CollState">Collateral State</label>
+        <input type="text" id="CollState" name="CollState" asp-for="CollState" />
+    </div>
+    <div>
+        <label for="CollZip">Collateral Zip</label>
+        <input type="text" id="CollZip" name="CollZip" asp-for="CollZip" />
+    </div>
 
     <button type="submit">Submit</button>
 </form>
