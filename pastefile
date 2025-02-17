@@ -1,23 +1,60 @@
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
+using YourApp.Models;
 
-        public string UserId { get; set; }
-        public string AccountNo { get; set; }
-        public string SSN { get; set; }
-        public decimal Balance { get; set; }
-        public string LoanLine { get; set; }
-        public int LienPos { get; set; }
-        public string PriFirstName { get; set; }
-        public string PriLastName { get; set; }
-        public string PriAdd1 { get; set; }
-        public string PriAdd2 { get; set; }
-        public string PriCity { get; set; }
-        public string PriState { get; set; }
-        public string PriZip { get; set; }
-        public string PriAc { get; set; }
-        public string PriPhone { get; set; }
-        public string Otac { get; set; }
-        public string PriOtherPhone { get; set; }
-        public string CollAdd1 { get; set; }
-        public string CollAdd2 { get; set; }
-        public string CollCity { get; set; }
-        public string CollState { get; set; }
-        public string CollZip { get; set; }
+namespace YourApp.Repositories
+{
+    public class ManualAddRepository
+    {
+        private readonly string _connectionString;
+
+        public ManualAddRepository(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        public async Task<long> AddProspectAsync(ManualAddModel model)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = new SqlCommand("usp_LMG_ManualAddprospect", connection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add parameters for stored procedure
+                command.Parameters.AddWithValue("@USERID", model.UserId);
+                command.Parameters.AddWithValue("@AccountNo", model.AccountNo);
+                command.Parameters.AddWithValue("@SSN", model.SSN);
+                command.Parameters.AddWithValue("@BALANCE", model.Balance);
+                command.Parameters.AddWithValue("@LOANLINE", model.LoanLine);
+                command.Parameters.AddWithValue("@LIENPOS", model.LienPos);
+                command.Parameters.AddWithValue("@PRIFNAME", model.PriFirstName);
+                command.Parameters.AddWithValue("@PRILNAME", model.PriLastName);
+                command.Parameters.AddWithValue("@PRIADD1", model.PriAdd1);
+                command.Parameters.AddWithValue("@PRIADD2", model.PriAdd2);
+                command.Parameters.AddWithValue("@PRICITY", model.PriCity);
+                command.Parameters.AddWithValue("@PRIST", model.PriState);
+                command.Parameters.AddWithValue("@PRIZIP", model.PriZip);
+                command.Parameters.AddWithValue("@PRIAC", model.PriAc);
+                command.Parameters.AddWithValue("@PRIPHONE", model.PriPhone);
+                command.Parameters.AddWithValue("@OTAC", model.Otac);
+                command.Parameters.AddWithValue("@PRIOTHRPH", model.PriOtherPhone);
+                command.Parameters.AddWithValue("@COLLADD1", model.CollAdd1);
+                command.Parameters.AddWithValue("@COLLADD2", model.CollAdd2);
+                command.Parameters.AddWithValue("@COLLCITY", model.CollCity);
+                command.Parameters.AddWithValue("@COLLST", model.CollState);
+                command.Parameters.AddWithValue("@COLLZIP", model.CollZip);
+                command.Parameters.Add("@LMDBID", SqlDbType.BigInt).Direction = ParameterDirection.Output;
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return Convert.ToInt64(command.Parameters["@LMDBID"].Value);
+            }
+        }
+    }
+}
