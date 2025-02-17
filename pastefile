@@ -1,44 +1,106 @@
 @model ManualAutoFillModel
 
+@{
+    ViewData["Title"] = "Manual Add Prospect";
+}
+
 <h2>Manual Add Prospect</h2>
 
 <form asp-action="ManualAdd" method="post">
-    <div>
-        <label>User ID</label>
-        <input asp-for="USERID" />
+    <div class="form-group">
+        <label asp-for="USERID"></label>
+        <input asp-for="USERID" class="form-control" />
     </div>
-    <div>
-        <label>Account No</label>
-        <input asp-for="AccountNo" />
+    <div class="form-group">
+        <label asp-for="AccountNo"></label>
+        <input asp-for="AccountNo" class="form-control" />
     </div>
-    <div>
-        <label>SSN</label>
-        <input asp-for="SSN" />
+    <div class="form-group">
+        <label asp-for="SSN"></label>
+        <input asp-for="SSN" class="form-control" />
     </div>
-    <div>
-        <label>Balance</label>
-        <input asp-for="BALANCE" type="number" step="0.01" />
+    <div class="form-group">
+        <label asp-for="BALANCE"></label>
+        <input asp-for="BALANCE" class="form-control" type="number" step="0.01" />
     </div>
-    <div>
-        <label>Loan Line</label>
-        <input asp-for="LOANLINE" />
+    <div class="form-group">
+        <label asp-for="LOANLINE"></label>
+        <input asp-for="LOANLINE" class="form-control" />
     </div>
-    <div>
-        <label>Lien Position</label>
-        <input asp-for="LIENPOS" type="number" />
+    <div class="form-group">
+        <label asp-for="LIENPOS"></label>
+        <input asp-for="LIENPOS" class="form-control" type="number" />
     </div>
-    <div>
-        <label>First Name</label>
-        <input asp-for="PRIFNAME" />
+    <div class="form-group">
+        <label asp-for="PRIFNAME"></label>
+        <input asp-for="PRIFNAME" class="form-control" />
     </div>
-    <div>
-        <label>Last Name</label>
-        <input asp-for="PRILNAME" />
+    <div class="form-group">
+        <label asp-for="PRILNAME"></label>
+        <input asp-for="PRILNAME" class="form-control" />
     </div>
-    <button type="submit">Submit</button>
+    <div class="form-group">
+        <label asp-for="PRIADD1"></label>
+        <input asp-for="PRIADD1" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRIADD2"></label>
+        <input asp-for="PRIADD2" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRICITY"></label>
+        <input asp-for="PRICITY" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRIST"></label>
+        <input asp-for="PRIST" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRIZIP"></label>
+        <input asp-for="PRIZIP" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRIAC"></label>
+        <input asp-for="PRIAC" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRIPHONE"></label>
+        <input asp-for="PRIPHONE" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="OTAC"></label>
+        <input asp-for="OTAC" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PRIOTHRPH"></label>
+        <input asp-for="PRIOTHRPH" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="COLLADD1"></label>
+        <input asp-for="COLLADD1" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="COLLADD2"></label>
+        <input asp-for="COLLADD2" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="COLLCITY"></label>
+        <input asp-for="COLLCITY" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="COLLST"></label>
+        <input asp-for="COLLST" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="COLLZIP"></label>
+        <input asp-for="COLLZIP" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-@if (ViewBag.LMDBID != null)
+@if (Model?.LMDBID != null)
 {
-    <p>Generated LMDBID: @ViewBag.LMDBID</p>
+    <div class="alert alert-success mt-3">
+        <strong>LMDBID:</strong> @Model.LMDBID
+    </div>
 }
