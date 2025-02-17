@@ -1,30 +1,44 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+@model ManualAutoFillModel
 
-public class AutofillController : Controller
+<h2>Manual Add Prospect</h2>
+
+<form asp-action="ManualAdd" method="post">
+    <div>
+        <label>User ID</label>
+        <input asp-for="USERID" />
+    </div>
+    <div>
+        <label>Account No</label>
+        <input asp-for="AccountNo" />
+    </div>
+    <div>
+        <label>SSN</label>
+        <input asp-for="SSN" />
+    </div>
+    <div>
+        <label>Balance</label>
+        <input asp-for="BALANCE" type="number" step="0.01" />
+    </div>
+    <div>
+        <label>Loan Line</label>
+        <input asp-for="LOANLINE" />
+    </div>
+    <div>
+        <label>Lien Position</label>
+        <input asp-for="LIENPOS" type="number" />
+    </div>
+    <div>
+        <label>First Name</label>
+        <input asp-for="PRIFNAME" />
+    </div>
+    <div>
+        <label>Last Name</label>
+        <input asp-for="PRILNAME" />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+@if (ViewBag.LMDBID != null)
 {
-    private readonly ManualAutoFillRepository _repository;
-
-    public AutofillController(ApplicationDbContext context)
-    {
-        _repository = new ManualAutoFillRepository(context);
-    }
-
-    [HttpGet]
-    public IActionResult ManualAdd()
-    {
-        return View(new ManualAutoFillModel());
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> ManualAdd(ManualAutoFillModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            string lmdbid = await _repository.ManualAddProspectAsync(model);
-            ViewBag.LMDBID = lmdbid;
-        }
-
-        return View(model);
-    }
+    <p>Generated LMDBID: @ViewBag.LMDBID</p>
 }
