@@ -1,54 +1,30 @@
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-public class ManualAutoFillRepository
+public class AutofillController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ManualAutoFillRepository _repository;
 
-    public ManualAutoFillRepository(ApplicationDbContext context)
+    public AutofillController(ApplicationDbContext context)
     {
-        _context = context;
+        _repository = new ManualAutoFillRepository(context);
     }
 
-    public async Task<string> ManualAddProspectAsync(ManualAutoFillModel model)
+    [HttpGet]
+    public IActionResult ManualAdd()
     {
-        string lmdbid = string.Empty;
+        return View(new ManualAutoFillModel());
+    }
 
-        var userIdParam = new SqlParameter("@USERID", model.USERID ?? (object)DBNull.Value);
-        var accountNoParam = new SqlParameter("@AccountNo", model.AccountNo ?? (object)DBNull.Value);
-        var ssnParam = new SqlParameter("@SSN", model.SSN ?? (object)DBNull.Value);
-        var balanceParam = new SqlParameter("@BALANCE", model.BALANCE);
-        var loanLineParam = new SqlParameter("@LOANLINE", model.LOANLINE ?? (object)DBNull.Value);
-        var lienPosParam = new SqlParameter("@LIENPOS", model.LIENPOS);
-        var priFNameParam = new SqlParameter("@PRIFNAME", model.PRIFNAME ?? (object)DBNull.Value);
-        var priLNameParam = new SqlParameter("@PRILNAME", model.PRILNAME ?? (object)DBNull.Value);
-        var priAdd1Param = new SqlParameter("@PRIADD1", model.PRIADD1 ?? (object)DBNull.Value);
-        var priAdd2Param = new SqlParameter("@PRIADD2", model.PRIADD2 ?? (object)DBNull.Value);
-        var priCityParam = new SqlParameter("@PRICITY", model.PRICITY ?? (object)DBNull.Value);
-        var priStateParam = new SqlParameter("@PRIST", model.PRIST ?? (object)DBNull.Value);
-        var priZipParam = new SqlParameter("@PRIZIP", model.PRIZIP ?? (object)DBNull.Value);
-        var priAcParam = new SqlParameter("@PRIAC", model.PRIAC ?? (object)DBNull.Value);
-        var priPhoneParam = new SqlParameter("@PRIPHONE", model.PRIPHONE ?? (object)DBNull.Value);
-        var priOtherPhParam = new SqlParameter("@PRIOTHRPH", model.PRIOTHRPH ?? (object)DBNull.Value);
-        var collAdd1Param = new SqlParameter("@COLLADD1", model.COLLADD1 ?? (object)DBNull.Value);
-        var collAdd2Param = new SqlParameter("@COLLADD2", model.COLLADD2 ?? (object)DBNull.Value);
-        var collCityParam = new SqlParameter("@COLLCITY", model.COLLCITY ?? (object)DBNull.Value);
-        var collStateParam = new SqlParameter("@COLLST", model.COLLST ?? (object)DBNull.Value);
-        var collZipParam = new SqlParameter("@COLLZIP", model.COLLZIP ?? (object)DBNull.Value);
-        var lmdbidParam = new SqlParameter("@LMDBID", System.Data.SqlDbType.BigInt) { Direction = System.Data.ParameterDirection.Output };
+    [HttpPost]
+    public async Task<IActionResult> ManualAdd(ManualAutoFillModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            string lmdbid = await _repository.ManualAddProspectAsync(model);
+            ViewBag.LMDBID = lmdbid;
+        }
 
-        await _context.Database.ExecuteSqlRawAsync(
-            "EXEC usp_LMG_ManualAddprospect @USERID, @AccountNo, @SSN, @BALANCE, @LOANLINE, @LIENPOS, " +
-            "@PRIFNAME, @PRILNAME, @PRIADD1, @PRIADD2, @PRICITY, @PRIST, @PRIZIP, @PRIAC, @PRIPHONE, " +
-            "@PRIOTHRPH, @COLLADD1, @COLLADD2, @COLLCITY, @COLLST, @COLLZIP, @LMDBID OUTPUT",
-            userIdParam, accountNoParam, ssnParam, balanceParam, loanLineParam, lienPosParam, priFNameParam,
-            priLNameParam, priAdd1Param, priAdd2Param, priCityParam, priStateParam, priZipParam, priAcParam,
-            priPhoneParam, priOtherPhParam, collAdd1Param, collAdd2Param, collCityParam, collStateParam,
-            collZipParam, lmdbidParam
-        );
-
-        lmdbid = lmdbidParam.Value.ToString();
-        return lmdbid;
+        return View(model);
     }
 }
