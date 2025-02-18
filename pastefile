@@ -1,45 +1,143 @@
- using (var connection = _context.Database.GetDbConnection())
-    {
-        await connection.OpenAsync();
-        using (var command = connection.CreateCommand())
-        {
-            command.CommandText = "usp_LMG_ManualAddprospect";
-            command.CommandType = CommandType.StoredProcedure;
-
-            command.Parameters.Add(new SqlParameter("@USERID", model.USERID));
-            command.Parameters.Add(new SqlParameter("@AccountNo", model.AccountNo));
-            command.Parameters.Add(new SqlParameter("@SSN", model.SSN));
-            command.Parameters.Add(new SqlParameter("@BALANCE", model.BALANCE));
-            command.Parameters.Add(new SqlParameter("@LOANLINE", model.LOANLINE));
-            command.Parameters.Add(new SqlParameter("@LIENPOS", model.LIENPOS));
-            command.Parameters.Add(new SqlParameter("@PRIFNAME", model.PRIFNAME));
-            command.Parameters.Add(new SqlParameter("@PRILNAME", model.PRILNAME));
-            command.Parameters.Add(new SqlParameter("@PRIADD1", model.PRIADD1));
-            command.Parameters.Add(new SqlParameter("@PRIADD2", model.PRIADD2));
-            command.Parameters.Add(new SqlParameter("@PRICITY", model.PRICITY));
-            command.Parameters.Add(new SqlParameter("@PRIST", model.PRIST));
-            command.Parameters.Add(new SqlParameter("@PRIZIP", model.PRIZIP));
-            command.Parameters.Add(new SqlParameter("@PRIAC", model.PRIAC));
-            command.Parameters.Add(new SqlParameter("@PRIPHONE", model.PRIPHONE));
-            command.Parameters.Add(new SqlParameter("@OTAC", model.OTAC));
-            command.Parameters.Add(new SqlParameter("@PRIOTHRPH", model.PRIOTHRPH));
-            command.Parameters.Add(new SqlParameter("@COLLADD1", model.COLLADD1));
-            command.Parameters.Add(new SqlParameter("@COLLADD2", model.COLLADD2));
-            command.Parameters.Add(new SqlParameter("@COLLCITY", model.COLLCITY));
-            command.Parameters.Add(new SqlParameter("@COLLST", model.COLLST));
-            command.Parameters.Add(new SqlParameter("@COLLZIP", model.COLLZIP));
-
-            // ✅ Correctly defining OUTPUT parameter
-            var outputParam = new SqlParameter("@LMDBID", SqlDbType.BigInt)
-            {
-                Direction = ParameterDirection.Output
-            };
-            command.Parameters.Add(outputParam);
-
-            await command.ExecuteNonQueryAsync();
-
-            // ✅ Retrieve output value
-            return outputParam.Value.ToString();
-        }
-    }
+@using LossMitigationMVC.Models.AutoFillModels;
+@model ManualAutoFillModel
+@{
+    ViewData["Title"] = "Manual Add Prospect";
 }
+
+<h2 class="text-center">Manual Add Prospect</h2>
+
+<form asp-action="ManualAdd" method="post" class="container">
+    <div class="row border p-3 bg-light">
+        <!-- Left Column -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="AccountNo">Account Number:</label>
+                <input asp-for="AccountNo" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label>Referral Source:</label>
+                <span class="font-weight-bold text-primary">MANUAL ADD</span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SSN">Social Sec Number:</label>
+                <input asp-for="SSN" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LOANLINE">Loan or Line:</label>
+                <select asp-for="LOANLINE" class="form-control">
+                    <option value="">Select</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRIFNAME">Primary First Name:</label>
+                <input asp-for="PRIFNAME" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRIADD1">Primary Address:</label>
+                <input asp-for="PRIADD1" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRICITY">Primary City:</label>
+                <input asp-for="PRICITY" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRIAC">Primary Home Phone:</label>
+                <div class="d-flex">
+                    <input asp-for="PRIAC" class="form-control w-25 mr-2" placeholder="Area Code" />
+                    <input asp-for="PRIPHONE" class="form-control w-75" placeholder="Phone Number" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Prospect Status:</label>
+                <span class="font-weight-bold text-primary">PENDING</span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BALANCE">Balance:</label>
+                <input asp-for="BALANCE" class="form-control" type="number" step="0.01" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LIENPOS">Lien Position:</label>
+                <select asp-for="LIENPOS" class="form-control">
+                    <option value="">Select</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRILNAME">Primary Last Name:</label>
+                <input asp-for="PRILNAME" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRIADD2">Primary Address Line 2:</label>
+                <input asp-for="PRIADD2" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PRIST">Primary State, Zip:</label>
+                <div class="d-flex">
+                    <select asp-for="PRIST" class="form-control w-50 mr-2">
+                        <option>Alabama</option>
+                        <!-- Add more states -->
+                    </select>
+                    <input asp-for="PRIZIP" class="form-control w-50" placeholder="Zip Code" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="OTAC">Primary Other Phone:</label>
+                <div class="d-flex">
+                    <input asp-for="OTAC" class="form-control w-25 mr-2" placeholder="Area Code" />
+                    <input asp-for="PRIOTHRPH" class="form-control w-75" placeholder="Phone Number" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Collateral Section (Full Width) -->
+        <div class="col-12 mt-3">
+            <h4>Collateral Information</h4>
+            <div class="form-group">
+                <label asp-for="COLLADD1">Collateral Address:</label>
+                <input asp-for="COLLADD1" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="COLLADD2">Collateral Address Line 2:</label>
+                <input asp-for="COLLADD2" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="COLLCITY">Collateral City:</label>
+                <input asp-for="COLLCITY" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="COLLST">Collateral State, Zip:</label>
+                <div class="d-flex">
+                    <select asp-for="COLLST" class="form-control w-50 mr-2">
+                        <option>Alabama</option>
+                        <!-- Add more states -->
+                    </select>
+                    <input asp-for="COLLZIP" class="form-control w-50" placeholder="Zip Code" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</form>
