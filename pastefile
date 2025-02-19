@@ -1,2 +1,43 @@
-keytool -importkeystore -srckeystore your_cert.jks -destkeystore your_cert.p12 -srcstoretype JKS -deststoretype PKCS12
-openssl pkcs12 -in your_cert.p12 -out your_cert.pfx -nodes
+using System;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.Threading.Tasks;
+using YourNamespace.GeneratedSoapClient; // Replace with the namespace of the generated WSDL classes
+
+public class SoapClientService
+{
+    private readonly ClientSearchAPIClient _client;
+
+    public SoapClientService()
+    {
+        var binding = new BasicHttpsBinding
+        {
+            Security = new BasicHttpsSecurity
+            {
+                Mode = BasicHttpsSecurityMode.Transport
+            }
+        };
+
+        var endpoint = new EndpointAddress("https://api-lms-ite.eapi02-mt.truist-tst.com/clientsearchapi-01-eapi02-ite/clientsearchapi");
+
+        _client = new ClientSearchAPIClient(binding, endpoint);
+        
+        // Load certificate
+        var certificate = new X509Certificate2("your_cert.pfx", "your_password");
+
+        // Attach certificate to the client
+        _client.ClientCredentials.ClientCertificate.Certificate = certificate;
+    }
+
+    public async Task<ClientSearchResponse> SearchClientAsync(string clientId)
+    {
+        var request = new ClientSearchRequest
+        {
+            ClientId = clientId
+        };
+
+        return await _client.ClientSearchAsync(request);
+    }
+}
