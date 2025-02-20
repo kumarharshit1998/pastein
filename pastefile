@@ -1,10 +1,9 @@
 using System;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using YourNamespace.GeneratedSoapClient; // Replace with the namespace of the generated WSDL classes
+using CIFSearch; // Namespace from generated Reference.cs
 
 public class SoapClientService
 {
@@ -12,6 +11,7 @@ public class SoapClientService
 
     public SoapClientService()
     {
+        // Configure binding for SOAP over HTTPS
         var binding = new BasicHttpsBinding
         {
             Security = new BasicHttpsSecurity
@@ -23,19 +23,25 @@ public class SoapClientService
         var endpoint = new EndpointAddress("https://api-lms-ite.eapi02-mt.truist-tst.com/clientsearchapi-01-eapi02-ite/clientsearchapi");
 
         _client = new ClientSearchAPIClient(binding, endpoint);
-        
-        // Load certificate
+
+        // Load the certificate
         var certificate = new X509Certificate2("your_cert.pfx", "your_password");
 
-        // Attach certificate to the client
+        // Attach the certificate
         _client.ClientCredentials.ClientCertificate.Certificate = certificate;
     }
 
-    public async Task<ClientSearchResponse> SearchClientAsync(string clientId)
+    public async Task<ClientSearchReply> SearchClientAsync(string accountNumber)
     {
         var request = new ClientSearchRequest
         {
-            ClientId = clientId
+            ClientSearchType = "A",
+            AccountSearch = new AccountSearch
+            {
+                BankNum = "",
+                AccountType = "",
+                AccountNumber = accountNumber
+            }
         };
 
         return await _client.ClientSearchAsync(request);
