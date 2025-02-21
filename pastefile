@@ -1,52 +1,60 @@
-using CIFSearch;
-using System;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.ServiceModel;
+using LossMitigationMVC.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace LossMitigationMVC.Services
+namespace LossMitigationMVC.Controllers
 {
-    public class CIFSoapClientService
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ClientSearchController : ControllerBase
     {
-        private readonly ClientSearchAPIClient _client;
+        private readonly CIFSoapClientService _cifService;
 
-        public CIFSoapClientService()
+        public ClientSearchController(CIFSoapClientService cifService)
         {
-            // Load certificate
-            var certificate = new X509Certificate2("your_cert.pfx", "your_password");
-
-            // Set up binding
-            var binding = new BasicHttpsBinding
-            {
-                Security = new BasicHttpsSecurity
-                {
-                    Mode = BasicHttpsSecurityMode.Transport
-                }
-            };
-
-            // Define the API endpoint
-            var endpoint = new EndpointAddress("https://api-lms-ite.eapi02-mt.truist-tst.com/clientsearchapi-01-eapi02-ite/clientsearchapi");
-
-            // Initialize client
-            _client = new ClientSearchAPIClient(binding, endpoint);
-
-            // Attach the certificate for authentication
-            _client.ClientCredentials.ClientCertificate.Certificate = certificate;
+            _cifService = cifService;
         }
 
-        public async Task<ClientSearchReply> SearchClientAsync(string accountNumber)
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchClient([FromQuery] string accountNumber)
         {
-            var request = new ClientSearchRequest
-            {
-                ClientSearchType = "A",
-                AccountSearch = new AccountSearch
-                {
-                    AccountNumber = accountNumber
-                }
-            };
-
-            return await _client.ClientSearchAsync(request);
+            var response = await _cifService.SearchClientAsync(accountNumber);
+            return Ok(response);
         }
     }
 }
+
+
+
+
+<input type="text" id="accountNumber" placeholder="Enter Account Number" />
+<button onclick="fetchClientData()">Search</button>
+
+<div>
+    <label>Client Name:</label>
+    <input type="text" id="clientName" />
+</div>
+<div>
+    <label>Address:</label>
+    <input type="text" id="clientAddress" />
+</div>
+
+<script>
+    async function fetchClientData() {
+        const accountNumber = document.getElementById("accountNumber").value;
+        const response = await fetch(`/api/ClientSearch/search?accountNumber=${accountNumber}`);
+        const data = await response.json();
+
+        if (data && data.Status && data.Status.ClientRecord.length > 0) {
+            const client = data.Status.ClientRecord[0]; // Get first record
+            document.getElementById("clientName").value = client.CIFShortName || "";
+            document.getElementById("clientAddress").value = client.AddressDetail?.Address1 || "";
+        } else {
+            alert("No client found");
+        }
+    }
+</script>
+
+
+
+builder.Services.AddSingleton<CIFSoapClientService>();
